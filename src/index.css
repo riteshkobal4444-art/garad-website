@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-canvas: #faf8f4;
+  --color-surface: #ffffff;
+  --color-forest-950: #082417;
+  --color-forest-900: #0d3021;
+  --color-forest-800: #16402e;
+  --color-forest-700: #1f523b;
+  --color-sage-50: #eef4f0;
+  --color-sage-100: #e2ede6;
+  --color-sage-200: #cce0d3;
+  --color-terracotta-700: #873217;
+  --color-terracotta-600: #9a3b1e;
+  --color-terracotta-500: #b04a2a;
+  --color-terracotta-50: #faeee9;
+  --color-ochre-600: #b57921;
+  --color-ochre-500: #cc8d30;
+  --color-cream-100: #f5f0e6;
+  --color-cream-200: #ebe3d3;
+  --color-ink-900: #171c19;
+  --color-ink-600: #555e58;
+  --color-ink-500: #6d7570;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    background-color: var(--color-canvas);
+    color: var(--color-ink-900);
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Subtle architectural isometric grid backdrop for the Civic Trajectory Index */
+.bg-trajectory-grid {
+  background-color: #eef4f0;
+  background-image:
+    radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.72), transparent 55%),
+    linear-gradient(to right, rgba(22, 64, 46, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 64, 46, 0.055) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* Soft ambient paper grain texture without performance cost */
+.bg-editorial-canvas {
+  background-color: #faf8f4;
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% -10%,
+    rgba(238, 244, 240, 0.7),
+    transparent 65%
+  );
+}
+
+/* Hide scrollbars cleanly for horizontal mobile filter dock */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 3D depth helpers */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+/* ==========================================================================
+   Glossy Black Chrome / Liquid Metal Card Border System
+   - Lightweight pure CSS metallic frame using masked ::before / ::after layers
+   - Preserves warm white editorial card interiors and text readability
+   - Pointer-events-free overlays so card links and buttons are never blocked
+   ========================================================================== */
+
+@property --chrome-angle {
+  syntax: "<angle>";
+  initial-value: 128deg;
+  inherits: false;
+}
+
+@keyframes chrome-reflection-orbit {
+  0% {
+    --chrome-angle: 128deg;
+  }
+  100% {
+    --chrome-angle: 488deg;
+  }
+}
+
+.chrome-card {
+  --chrome-width: 2px;
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    0 12px 28px -16px rgba(9, 13, 11, 0.26),
+    0 3px 8px -2px rgba(9, 13, 11, 0.13),
+    inset 0 2.5px 0 -0.5px rgba(255, 255, 255, 0.88),
+    inset 0 -2px 2px -1px rgba(10, 14, 12, 0.11);
+  transition:
+    transform 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 340ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chrome-card-subtle {
+  --chrome-width: 1.65px;
+}
+
+.chrome-card-dark {
+  box-shadow:
+    0 18px 38px -16px rgba(4, 16, 11, 0.5),
+    0 4px 10px -2px rgba(4, 16, 11, 0.28),
+    inset 0 2.5px 0 -0.5px rgba(255, 255, 255, 0.16),
+    inset 0 -2px 2px -1px rgba(0, 0, 0, 0.45);
+}
+
+/* Base polished black chrome bezel ring */
+.chrome-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--chrome-width);
+  pointer-events: none;
+  z-index: 25;
+  background:
+    conic-gradient(
+      from 132deg at 50% 50%,
+      #08090b 0deg,
+      #1b1f24 32deg,
+      #4a525b 56deg,
+      #e4eaf1 70deg,
+      #606973 82deg,
+      #1b1f24 114deg,
+      #060708 162deg,
+      #22272d 202deg,
+      #586069 230deg,
+      #d2dae3 245deg,
+      #4d555e 259deg,
+      #171b1f 298deg,
+      #08090b 360deg
+    );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition:
+    filter 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chrome-card-dark::before {
+  background:
+    conic-gradient(
+      from 132deg at 50% 50%,
+      #0c1012 0deg,
+      #252c31 34deg,
+      #66707a 56deg,
+      #eff4f9 70deg,
+      #6e7883 82deg,
+      #22282d 114deg,
+      #0a0e10 162deg,
+      #2b3238 202deg,
+      #68717c 230deg,
+      #dee5ed 245deg,
+      #5b646e 259deg,
+      #1f2429 298deg,
+      #0c1012 360deg
+    );
+}
+
+/* Restrained slow-moving narrow silver-white specular reflection (hover-activated on desktop) */
+.chrome-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--chrome-width);
+  pointer-events: none;
+  z-index: 26;
+  opacity: 0;
+  background:
+    conic-gradient(
+      from var(--chrome-angle) at 50% 50%,
+      transparent 0deg,
+      transparent 316deg,
+      rgba(205, 215, 226, 0.22) 334deg,
+      rgba(255, 255, 255, 0.92) 346deg,
+      rgba(205, 215, 226, 0.2) 356deg,
+      transparent 360deg
+    );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  transition: opacity 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Desktop fine-pointer hover polish only (mobile remains static & high-FPS) */
+@media (hover: hover) and (pointer: fine) {
+  .chrome-card:hover {
+    box-shadow:
+      0 22px 44px -18px rgba(8, 14, 11, 0.32),
+      0 6px 14px -4px rgba(8, 14, 11, 0.16),
+      inset 0 2.5px 0 -0.5px rgba(255, 255, 255, 0.96),
+      inset 0 -2px 2px -1px rgba(10, 14, 12, 0.14);
+  }
+
+  .chrome-card-dark:hover {
+    box-shadow:
+      0 24px 48px -16px rgba(3, 12, 8, 0.58),
+      0 8px 18px -4px rgba(3, 12, 8, 0.34),
+      inset 0 2.5px 0 -0.5px rgba(255, 255, 255, 0.24),
+      inset 0 -2px 2px -1px rgba(0, 0, 0, 0.5);
+  }
+
+  .chrome-card-lift:hover {
+    transform: translateY(-2.5px);
+  }
+
+  .chrome-card:hover::before {
+    filter: brightness(1.18) contrast(1.06);
+  }
+
+  .chrome-card:hover::after {
+    opacity: 0.95;
+    animation: chrome-reflection-orbit 7.5s linear infinite;
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .chrome-card,
+  .chrome-card::before,
+  .chrome-card::after {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+
+  .chrome-card-lift:hover {
+    transform: none;
+  }
+
+  .chrome-card:hover::after {
+    opacity: 0.35;
+    animation: none !important;
+  }
+}
+
+/* Graceful fallback if CSS mask-composite is unsupported */
+@supports not ((mask-composite: exclude) or (-webkit-mask-composite: xor)) {
+  .chrome-card {
+    border: 1.75px solid #1b1f24;
+    box-shadow:
+      0 10px 24px -14px rgba(8, 12, 10, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .chrome-card::before,
+  .chrome-card::after {
+    display: none;
+  }
+}
+
+/* Print optimization for archival PDF & acknowledgement export */
+@media print {
+  header,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  .chrome-card {
+    border: 1px solid #d5cfc4 !important;
+    box-shadow: none !important;
+  }
+  .chrome-card::before,
+  .chrome-card::after {
+    display: none !important;
+  }
+}

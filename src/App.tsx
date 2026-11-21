@@ -1,0 +1,281 @@
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
+import { ArrowLeft } from 'lucide-react';
+import {
+  ActivityCategory,
+  ActivityMedia,
+  FiscalYearId,
+  getActivityBySlug,
+} from './data/activities';
+import {
+  AppRoute,
+  getActivityPath,
+  getDonatePath,
+  getDonationSuccessPath,
+  parseCurrentRoute,
+  pushRoute,
+} from './utils/router';
+import { VerifiedReceipt } from './utils/razorpayCheckout';
+import { Navbar, NavSectionKey } from './components/Navbar';
+import { InitiativesPage } from './components/InitiativesPage';
+import { ActivityDetailPage } from './components/ActivityDetailPage';
+import { DonatePage } from './components/DonatePage';
+import { DonationSuccessPage } from './components/DonationSuccessPage';
+import { AccountingExportModal } from './components/AccountingExportModal';
+import {
+  EditorialDialogType,
+  EditorialModal,
+  LightboxModal,
+} from './components/InfoModals';
+import {
+  EASE_EDITORIAL,
+  ScrollProgressBar,
+} from './components/motion/MotionPrimitives';
+
+export default function App() {
+  const [route, setRoute] = useState<AppRoute>(() => parseCurrentRoute());
+  const [activeNav, setActiveNav] = useState<NavSectionKey | null>(() => {
+    const initial = parseCurrentRoute();
+    return initial.view === 'donate' || initial.view === 'donation-success'
+      ? null
+      : 'initiatives';
+  });
+
+  // Archive Filter State (defaults to 2020-21 populated edition + All categories)
+  const [selectedYear, setSelectedYear] = useState<FiscalYearId>('2020-21');
+  const [selectedCategory, setSelectedCategory] =
+    useState<ActivityCategory>('All');
+
+  // Transient in-memory receipt cache for smooth post-checkout transition
+  const [lastVerifiedReceipt, setLastVerifiedReceipt] = useState<{
+    reference: string;
+    receipt: VerifiedReceipt;
+  } | null>(null);
+
+  // Modals & Lightbox state
+  const [dialog, setDialog] = useState<EditorialDialogType>(null);
+  const [accountingExportOpen, setAccountingExportOpen] = useState(false);
+  const [lightboxState, setLightboxState] = useState<{
+    mediaItems: ActivityMedia[];
+    index: number | null;
+  }>({ mediaItems: [], index: null });
+
+  // Listen to browser Back/Forward (popstate) and hashchange
+  useEffect(() => {
+    const syncRoute = () => {
+      const next = parseCurrentRoute();
+      setRoute(next);
+      setActiveNav(
+        next.view === 'donate' || next.view === 'donation-success'
+          ? null
+          : 'initiatives'
+      );
+    };
+    window.addEventListener('popstate', syncRoute);
+    window.addEventListener('hashchange', syncRoute);
+    return () => {
+      window.removeEventListener('popstate', syncRoute);
+      window.removeEventListener('hashchange', syncRoute);
+    };
+  }, []);
+
+  const navigateToArchive = () => {
+    pushRoute('/activities');
+    setRoute({ view: 'archive' });
+    setActiveNav('initiatives');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToActivity = (slug: string) => {
+    pushRoute(getActivityPath(slug));
+    setRoute({ view: 'activity', slug });
+    setActiveNav('initiatives');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToDonate = () => {
+    pushRoute(getDonatePath());
+    setRoute({ view: 'donate' });
+    setActiveNav(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToDonationSuccess = ({
+    reference,
+    token,
+    receipt,
+  }: {
+    reference: string;
+    token: string;
+    receipt: VerifiedReceipt;
+  }) => {
+    setLastVerifiedReceipt({ reference, receipt });
+    pushRoute(getDonationSuccessPath(reference, token));
+    setRoute({ view: 'donation-success', reference, token });
+    setActiveNav(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectNav = (key: NavSectionKey) => {
+    if (key === 'initiatives') {
+      navigateToArchive();
+      return;
+    }
+    setActiveNav(key);
+    setDialog({ kind: 'section', section: key });
+  };
+
+  const currentActivity =
+    route.view === 'activity' ? getActivityBySlug(route.slug) : undefined;
+
+  const isDonateFlow =
+    route.view === 'donate' || route.view === 'donation-success';
+
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-editorial-canvas text-[#171C19] flex flex-col">
+        <Navbar
+          activeNav={activeNav}
+          isDonateRoute={isDonateFlow}
+          onNavigateHome={navigateToArchive}
+          onSelectNav={handleSelectNav}
+          onNavigateDonate={navigateToDonate}
+          onOpenPortal={() =>
+            setDialog({ kind: 'section', section: 'portal' })
+          }
+        />
+
+        <ScrollProgressBar />
+
+        <div className="flex-1">
+          <AnimatePresence mode="wait">
+            {route.view === 'archive' ? (
+              <motion.div
+                key="route-archive"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: EASE_EDITORIAL }}
+              >
+                <InitiativesPage
+                  selectedYear={selectedYear}
+                  selectedCategory={selectedCategory}
+                  onSelectYear={setSelectedYear}
+                  onSelectCategory={setSelectedCategory}
+                  onNavigateActivity={navigateToActivity}
+                />
+              </motion.div>
+            ) : route.view === 'donate' ? (
+              <motion.div
+                key="route-donate"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <DonatePage
+                  onNavigateArchive={navigateToArchive}
+                  onDonationVerified={navigateToDonationSuccess}
+                  onOpenAccountingExport={() => setAccountingExportOpen(true)}
+                />
+              </motion.div>
+            ) : route.view === 'donation-success' ? (
+              <motion.div
+                key={`route-donation-success-${route.reference}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <DonationSuccessPage
+                  reference={route.reference}
+                  token={route.token}
+                  initialReceipt={
+                    lastVerifiedReceipt?.reference === route.reference
+                      ? lastVerifiedReceipt.receipt
+                      : null
+                  }
+                  onNavigateDonate={navigateToDonate}
+                  onNavigateArchive={navigateToArchive}
+                />
+              </motion.div>
+            ) : currentActivity ? (
+              <motion.div
+                key={`route-activity-${currentActivity.slug}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <ActivityDetailPage
+                  activity={currentActivity}
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateActivity={navigateToActivity}
+                  onOpenLightbox={(mediaItems, index) =>
+                    setLightboxState({ mediaItems, index })
+                  }
+                  onNavigateDonate={navigateToDonate}
+                />
+              </motion.div>
+            ) : (
+              <motion.main
+                key="route-not-found"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: EASE_EDITORIAL }}
+                className="max-w-2xl mx-auto px-6 py-24 text-center"
+              >
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#9A3B1E]">
+                  Activity Archive · Record Not Found
+                </p>
+                <h1 className="mt-3 font-serif text-3xl sm:text-4xl font-bold text-[#171C19]">
+                  We couldn&apos;t locate that activity record
+                </h1>
+                <p className="mt-3 text-[15px] leading-relaxed text-[#555E58]">
+                  The requested activity slug does not match a published record
+                  in the Garad Foundation Activity Report 2020–2026 archive.
+                </p>
+                <button
+                  type="button"
+                  onClick={navigateToArchive}
+                  className="mt-7 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-sm font-semibold transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Return to All Activities</span>
+                </button>
+              </motion.main>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Modals & Lightbox */}
+        <EditorialModal
+          dialog={dialog}
+          onClose={() => {
+            setDialog(null);
+            setActiveNav(isDonateFlow ? null : 'initiatives');
+          }}
+          onNavigateActivity={navigateToActivity}
+          onNavigateDonate={navigateToDonate}
+        />
+
+        <AccountingExportModal
+          open={accountingExportOpen}
+          onClose={() => setAccountingExportOpen(false)}
+        />
+
+        <LightboxModal
+          mediaItems={lightboxState.mediaItems}
+          activeIndex={lightboxState.index}
+          onClose={() =>
+            setLightboxState((prev) => ({ ...prev, index: null }))
+          }
+          onChangeIndex={(nextIndex) =>
+            setLightboxState((prev) => ({ ...prev, index: nextIndex }))
+          }
+        />
+      </div>
+    </MotionConfig>
+  );
+}

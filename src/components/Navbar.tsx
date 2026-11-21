@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MapPin, User, Menu, X } from 'lucide-react';
+import {
+  ChevronDown,
+  FileText,
+  Info,
+  MapPin,
+  Menu,
+  User,
+  X,
+} from 'lucide-react';
 import { EASE_EDITORIAL } from './motion/MotionPrimitives';
 
 export type NavSectionKey = 'initiatives' | 'impact' | 'stories' | 'about';
@@ -8,8 +16,10 @@ export type NavSectionKey = 'initiatives' | 'impact' | 'stories' | 'about';
 interface NavbarProps {
   activeNav: NavSectionKey | null;
   isDonateRoute?: boolean;
+  isReportsRoute?: boolean;
   onNavigateHome: () => void;
   onSelectNav: (key: NavSectionKey) => void;
+  onNavigateReports: () => void;
   onNavigateDonate: () => void;
   onOpenPortal: () => void;
 }
@@ -24,12 +34,39 @@ const NAV_ITEMS: { key: NavSectionKey; label: string }[] = [
 export function Navbar({
   activeNav,
   isDonateRoute = false,
+  isReportsRoute = false,
   onNavigateHome,
   onSelectNav,
+  onNavigateReports,
   onNavigateDonate,
   onOpenPortal,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
+  const aboutMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!aboutMenuOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      if (
+        aboutMenuRef.current &&
+        !aboutMenuRef.current.contains(e.target as Node)
+      ) {
+        setAboutMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setAboutMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [aboutMenuOpen]);
 
   const handleHomeLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
@@ -37,7 +74,18 @@ export function Navbar({
     }
     e.preventDefault();
     setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
     onNavigateHome();
+  };
+
+  const handleReportsLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
+    onNavigateReports();
   };
 
   const handleDonateLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -46,11 +94,13 @@ export function Navbar({
     }
     e.preventDefault();
     setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
     onNavigateDonate();
   };
 
   const handleNavClick = (key: NavSectionKey) => {
     setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
     onSelectNav(key);
   };
 
@@ -79,7 +129,10 @@ export function Navbar({
           className="hidden md:flex items-center gap-7 lg:gap-8"
         >
           {NAV_ITEMS.map((item) => {
-            const isActive = activeNav === item.key;
+            const isActive =
+              activeNav === item.key ||
+              (item.key === 'about' && isReportsRoute);
+
             if (item.key === 'initiatives') {
               return (
                 <a
@@ -101,6 +154,91 @@ export function Navbar({
                     />
                   )}
                 </a>
+              );
+            }
+
+            if (item.key === 'about') {
+              return (
+                <div key={item.key} ref={aboutMenuRef} className="relative">
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={aboutMenuOpen}
+                    onClick={() => setAboutMenuOpen((prev) => !prev)}
+                    className={`relative py-2 inline-flex items-center gap-1 text-[13.5px] font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A3B1E]/40 rounded-sm ${
+                      isActive
+                        ? 'text-[#142019] font-semibold'
+                        : 'text-[#555E58] hover:text-[#142019]'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-[#6E7872] transition-transform duration-200 ${
+                        aboutMenuOpen ? 'rotate-180 text-[#9A3B1E]' : ''
+                      }`}
+                    />
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-active-underline"
+                        transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                        className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-[#9A3B1E]"
+                      />
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {aboutMenuOpen && (
+                      <motion.div
+                        role="menu"
+                        aria-label="About Garad Foundation menu"
+                        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                        transition={{ duration: 0.16, ease: EASE_EDITORIAL }}
+                        className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#FAF8F4] border border-[#E4DDD0] shadow-[0_18px_40px_-18px_rgba(13,48,33,0.28)] p-1.5 z-50"
+                      >
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => handleNavClick('about')}
+                          className="w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-white transition-colors cursor-pointer"
+                        >
+                          <Info className="w-4 h-4 text-[#0D3021] shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#171C19] leading-tight">
+                              About Garad Foundation
+                            </p>
+                            <p className="mt-0.5 text-[11.5px] text-[#66706A] leading-snug">
+                              Mission, Thane roots &amp; archive note
+                            </p>
+                          </div>
+                        </button>
+
+                        <a
+                          href="/reports"
+                          role="menuitem"
+                          aria-current={isReportsRoute ? 'page' : undefined}
+                          onClick={handleReportsLink}
+                          className={`mt-0.5 w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                            isReportsRoute
+                              ? 'bg-[#EEF4F0]'
+                              : 'hover:bg-white'
+                          }`}
+                        >
+                          <FileText className="w-4 h-4 text-[#9A3B1E] shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#171C19] leading-tight">
+                              Reports &amp; Publications
+                            </p>
+                            <p className="mt-0.5 text-[11.5px] text-[#66706A] leading-snug">
+                              Annual Reports &amp; Activity PDFs
+                            </p>
+                          </div>
+                        </a>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               );
             }
 
@@ -182,7 +320,9 @@ export function Navbar({
           >
             <div className="flex flex-col gap-1">
               {NAV_ITEMS.map((item) => {
-                const isActive = activeNav === item.key;
+                const isActive =
+                  activeNav === item.key &&
+                  !(item.key === 'about' && isReportsRoute);
                 return (
                   <button
                     key={item.key}
@@ -198,6 +338,20 @@ export function Navbar({
                   </button>
                 );
               })}
+
+              <a
+                href="/reports"
+                aria-current={isReportsRoute ? 'page' : undefined}
+                onClick={handleReportsLink}
+                className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isReportsRoute
+                    ? 'bg-[#EEF4F0] text-[#0D3021] font-semibold'
+                    : 'text-[#4F5953] hover:bg-white'
+                }`}
+              >
+                <FileText className="w-4 h-4 text-[#9A3B1E]" />
+                <span>Reports &amp; Publications</span>
+              </a>
             </div>
           </motion.div>
         )}

@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  FileText,
   HeartHandshake,
   MapPin,
   X,
@@ -146,6 +147,7 @@ interface EditorialModalProps {
   dialog: EditorialDialogType;
   onClose: () => void;
   onNavigateActivity: (slug: string) => void;
+  onNavigateReports: () => void;
   onNavigateDonate: () => void;
 }
 
@@ -153,6 +155,7 @@ export function EditorialModal({
   dialog,
   onClose,
   onNavigateActivity,
+  onNavigateReports,
   onNavigateDonate,
 }: EditorialModalProps) {
   const prefersReduced = useReducedMotion();
@@ -298,7 +301,22 @@ export function EditorialModal({
                     2020–2026—prioritising factual accuracy, safeguarding, and
                     transparent grassroots storytelling.
                   </p>
-                  <div className="pt-1">
+                  <div className="pt-1 flex flex-wrap items-center gap-2.5">
+                    <a
+                      href="/reports"
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                          return;
+                        }
+                        e.preventDefault();
+                        onClose();
+                        onNavigateReports();
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-xs font-semibold transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Reports &amp; Publications</span>
+                    </a>
                     <a
                       href="/donate"
                       onClick={(e) => {

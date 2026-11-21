@@ -12,6 +12,7 @@ import {
   getActivityPath,
   getDonatePath,
   getDonationSuccessPath,
+  getReportsPath,
   parseCurrentRoute,
   pushRoute,
 } from './utils/router';
@@ -19,8 +20,10 @@ import { VerifiedReceipt } from './utils/razorpayCheckout';
 import { Navbar, NavSectionKey } from './components/Navbar';
 import { InitiativesPage } from './components/InitiativesPage';
 import { ActivityDetailPage } from './components/ActivityDetailPage';
+import { ReportsPage } from './components/ReportsPage';
 import { DonatePage } from './components/DonatePage';
 import { DonationSuccessPage } from './components/DonationSuccessPage';
+import { SiteFooter } from './components/SiteFooter';
 import { AccountingExportModal } from './components/AccountingExportModal';
 import {
   EditorialDialogType,
@@ -32,14 +35,17 @@ import {
   ScrollProgressBar,
 } from './components/motion/MotionPrimitives';
 
+function getNavKeyForRoute(r: AppRoute): NavSectionKey | null {
+  if (r.view === 'donate' || r.view === 'donation-success') return null;
+  if (r.view === 'reports') return 'about';
+  return 'initiatives';
+}
+
 export default function App() {
   const [route, setRoute] = useState<AppRoute>(() => parseCurrentRoute());
-  const [activeNav, setActiveNav] = useState<NavSectionKey | null>(() => {
-    const initial = parseCurrentRoute();
-    return initial.view === 'donate' || initial.view === 'donation-success'
-      ? null
-      : 'initiatives';
-  });
+  const [activeNav, setActiveNav] = useState<NavSectionKey | null>(() =>
+    getNavKeyForRoute(parseCurrentRoute())
+  );
 
   // Archive Filter State (defaults to 2020-21 populated edition + All categories)
   const [selectedYear, setSelectedYear] = useState<FiscalYearId>('2020-21');
@@ -65,11 +71,7 @@ export default function App() {
     const syncRoute = () => {
       const next = parseCurrentRoute();
       setRoute(next);
-      setActiveNav(
-        next.view === 'donate' || next.view === 'donation-success'
-          ? null
-          : 'initiatives'
-      );
+      setActiveNav(getNavKeyForRoute(next));
     };
     window.addEventListener('popstate', syncRoute);
     window.addEventListener('hashchange', syncRoute);
@@ -90,6 +92,13 @@ export default function App() {
     pushRoute(getActivityPath(slug));
     setRoute({ view: 'activity', slug });
     setActiveNav('initiatives');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToReports = () => {
+    pushRoute(getReportsPath());
+    setRoute({ view: 'reports' });
+    setActiveNav('about');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -137,8 +146,10 @@ export default function App() {
         <Navbar
           activeNav={activeNav}
           isDonateRoute={isDonateFlow}
+          isReportsRoute={route.view === 'reports'}
           onNavigateHome={navigateToArchive}
           onSelectNav={handleSelectNav}
+          onNavigateReports={navigateToReports}
           onNavigateDonate={navigateToDonate}
           onOpenPortal={() =>
             setDialog({ kind: 'section', section: 'portal' })
@@ -163,6 +174,20 @@ export default function App() {
                   onSelectYear={setSelectedYear}
                   onSelectCategory={setSelectedCategory}
                   onNavigateActivity={navigateToActivity}
+                />
+              </motion.div>
+            ) : route.view === 'reports' ? (
+              <motion.div
+                key="route-reports"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <ReportsPage
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateDonate={navigateToDonate}
                 />
               </motion.div>
             ) : route.view === 'donate' ? (
@@ -211,6 +236,7 @@ export default function App() {
                   activity={currentActivity}
                   onNavigateArchive={navigateToArchive}
                   onNavigateActivity={navigateToActivity}
+                  onNavigateReports={navigateToReports}
                   onOpenLightbox={(mediaItems, index) =>
                     setLightboxState({ mediaItems, index })
                   }
@@ -249,14 +275,21 @@ export default function App() {
           </AnimatePresence>
         </div>
 
+        <SiteFooter
+          onNavigateArchive={navigateToArchive}
+          onNavigateReports={navigateToReports}
+          onNavigateDonate={navigateToDonate}
+        />
+
         {/* Modals & Lightbox */}
         <EditorialModal
           dialog={dialog}
           onClose={() => {
             setDialog(null);
-            setActiveNav(isDonateFlow ? null : 'initiatives');
+            setActiveNav(getNavKeyForRoute(route));
           }}
           onNavigateActivity={navigateToActivity}
+          onNavigateReports={navigateToReports}
           onNavigateDonate={navigateToDonate}
         />
 

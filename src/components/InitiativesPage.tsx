@@ -272,8 +272,12 @@ export function InitiativesPage({
         )}
       </section>
 
-      {/* ==================== FOOTER BAR ==================== */}
-      <footer className="mt-16 pt-6 border-t border-[#E6DFD2] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[12px] text-[#66706A]">
+      {/* ==================== ARCHIVE SUMMARY BAR ==================== */}
+      <div
+        role="status"
+        aria-label="Archive summary"
+        className="mt-16 pt-6 border-t border-[#E6DFD2] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[12px] text-[#66706A]"
+      >
         <div className="flex items-center gap-2">
           <span
             aria-hidden="true"
@@ -292,7 +296,7 @@ export function InitiativesPage({
         <span className="font-mono text-[11px] tracking-[0.1em] text-[#7D8580]">
           GARAD FOUNDATION · ACTIVITY REPORT 2020–2026
         </span>
-      </footer>
+      </div>
     </main>
   );
 }

@@ -260,6 +260,36 @@ async function startServer() {
   );
 
   // -------------------------------------------------------------------------
+  // STATIC PDF REPORTS (strict application/pdf + nosniff; never SPA-fallback)
+  // -------------------------------------------------------------------------
+  const reportsDir = path.resolve(
+    __dirname,
+    isProduction ? 'dist/assets/reports' : 'public/assets/reports'
+  );
+  app.use(
+    '/assets/reports',
+    express.static(reportsDir, {
+      fallthrough: false,
+      setHeaders: (res, filePath) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        if (filePath.endsWith('.pdf')) {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Cache-Control', 'public, max-age=3600');
+        }
+      },
+    })
+  );
+  app.use(
+    '/assets/reports',
+    (_err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+      return res.status(404).json({
+        error: 'Requested report PDF was not found.',
+        code: 'REPORT_NOT_FOUND',
+      });
+    }
+  );
+
+  // -------------------------------------------------------------------------
   // FRONTEND SERVING (Vite dev middleware in dev, static dist in prod)
   // -------------------------------------------------------------------------
   if (!isProduction) {

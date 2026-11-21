@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   motion,
   useReducedMotion,
@@ -6,17 +6,22 @@ import {
   useTransform,
 } from 'motion/react';
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   Award,
   BookOpen,
   Calendar,
   CheckCircle2,
+  Download,
+  ExternalLink,
+  FileText,
   Globe,
   GraduationCap,
   Heart,
   HeartHandshake,
   Info,
+  Loader2,
   MapPin,
   Maximize2,
   Mic,
@@ -33,7 +38,9 @@ import {
   ActivityRecord,
   getRelatedActivities,
 } from '../data/activities';
-import { getActivityPath } from '../utils/router';
+import { getPublishedActivityReportBySlug } from '../data/reportsRegistry';
+import { downloadVerifiedPdf } from '../utils/pdfDownload';
+import { getActivityPath, getReportsPath } from '../utils/router';
 import { usePageSeo } from '../utils/seo';
 import { ArchivalMediaFrame } from './ArchivalMediaFrame';
 import { MethodologyTimeline } from './MethodologyTimeline';
@@ -54,6 +61,7 @@ interface ActivityDetailPageProps {
   activity: ActivityRecord;
   onNavigateArchive: () => void;
   onNavigateActivity: (slug: string) => void;
+  onNavigateReports: () => void;
   onOpenLightbox: (mediaItems: ActivityMedia[], index: number) => void;
   onNavigateDonate: () => void;
 }
@@ -108,11 +116,16 @@ export function ActivityDetailPage({
   activity,
   onNavigateArchive,
   onNavigateActivity,
+  onNavigateReports,
   onOpenLightbox,
   onNavigateDonate,
 }: ActivityDetailPageProps) {
   const prefersReduced = useReducedMotion();
   const heroMediaRef = useRef<HTMLDivElement>(null);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [reportDownloadError, setReportDownloadError] = useState<string | null>(
+    null
+  );
 
   const { scrollYProgress: photoProgress } = useScroll({
     target: heroMediaRef,
@@ -124,6 +137,30 @@ export function ActivityDetailPage({
     () => getRelatedActivities(activity),
     [activity]
   );
+
+  const activityReport = useMemo(
+    () => getPublishedActivityReportBySlug(activity.slug),
+    [activity.slug]
+  );
+
+  useEffect(() => {
+    setReportDownloadError(null);
+    setIsDownloadingReport(false);
+  }, [activity.slug]);
+
+  const handleDownloadActivityReport = async () => {
+    if (!activityReport || isDownloadingReport) return;
+    setReportDownloadError(null);
+    setIsDownloadingReport(true);
+    const result = await downloadVerifiedPdf({
+      fileUrl: activityReport.fileUrl,
+      downloadFilename: activityReport.downloadFilename,
+    });
+    setIsDownloadingReport(false);
+    if (!result.ok && result.error) {
+      setReportDownloadError(result.error);
+    }
+  };
 
   // Dynamic per-activity SEO title, description, Open Graph & Schema.org Article data
   const structuredData = useMemo(
@@ -265,6 +302,76 @@ export function ActivityDetailPage({
         >
           {activity.introduction}
         </motion.p>
+
+        {/* Primary Activity Report PDF Download Action (near project overview) */}
+        {activityReport && (
+          <motion.div
+            initial={prefersReduced ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.52, delay: 0.25, ease: EASE_EDITORIAL }}
+            className="mt-6 rounded-[16px] bg-white border border-[#E6DFD2] shadow-[0_6px_20px_-14px_rgba(13,48,33,0.18)] px-4 sm:px-5 py-4"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-[#EEF4F0] border border-[#D8E5DD] flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4 text-[#0D3021]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[14px] font-semibold text-[#171C19] leading-snug">
+                    Detailed project documentation in PDF format.
+                  </p>
+                  <p className="mt-0.5 text-[12px] text-[#66706A] tabular-nums">
+                    CSR-Ready Activity Report · {activityReport.financialYear} ·
+                    PDF · {activityReport.pageCount} pages ·{' '}
+                    {activityReport.fileSizeLabel}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={isDownloadingReport}
+                  onClick={handleDownloadActivityReport}
+                  aria-label={`Download ${activity.title} Activity Report PDF (${activityReport.fileSizeLabel}, ${activityReport.pageCount} pages)`}
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-[#0D3021] hover:bg-[#16402E] disabled:opacity-65 text-white text-[13px] font-semibold shadow-[0_6px_16px_-8px_rgba(8,36,23,0.45)] transition-colors cursor-pointer whitespace-nowrap w-full sm:w-auto"
+                >
+                  {isDownloadingReport ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Preparing PDF…</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>Download Activity Report</span>
+                    </>
+                  )}
+                </button>
+
+                <a
+                  href={activityReport.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#FAF8F4] hover:bg-[#F2ECE0] border border-[#E5DDD0] text-[12.5px] font-semibold text-[#232D27] transition-colors whitespace-nowrap w-full sm:w-auto"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-[#9A3B1E]" />
+                  <span>View PDF</span>
+                </a>
+              </div>
+            </div>
+
+            {reportDownloadError && (
+              <div
+                role="alert"
+                className="mt-3 rounded-xl bg-[#FDF0EC] border border-[#EBC7BC] px-3.5 py-2.5 flex items-start gap-2 text-[12.5px] text-[#7D2912]"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{reportDownloadError}</span>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* Three Metadata Cards */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
@@ -780,6 +887,60 @@ export function ActivityDetailPage({
           </Reveal>
         </aside>
       </section>
+
+      {/* ==================== SECONDARY ACTIVITY REPORT DOWNLOAD STRIP ==================== */}
+      {activityReport && (
+        <section
+          aria-label="Activity report PDF documentation"
+          className="mt-14 pt-8 border-t border-[#E6DFD2]"
+        >
+          <div className="rounded-[18px] bg-[#F5F1E9]/85 border border-[#E6DFD2] px-5 sm:px-7 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#9A3B1E]">
+                OFFICIAL PROJECT DOCUMENTATION
+              </p>
+              <p className="mt-1 font-serif text-[20px] font-bold text-[#171C19] leading-snug">
+                {activity.title} — Activity Report ({activityReport.financialYear})
+              </p>
+              <p className="mt-1 text-[13px] text-[#58625C]">
+                Detailed project documentation in PDF format ({activityReport.pageCount}{' '}
+                pages · {activityReport.fileSizeLabel}), formatted for CSR teams
+                and institutional review.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0">
+              <button
+                type="button"
+                disabled={isDownloadingReport}
+                onClick={handleDownloadActivityReport}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#9A3B1E] hover:bg-[#843016] disabled:opacity-65 text-white text-[13px] font-semibold transition-colors cursor-pointer whitespace-nowrap w-full sm:w-auto"
+              >
+                {isDownloadingReport ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Preparing PDF…</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span>Download Activity Report</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href={getReportsPath()}
+                onClick={(e) => handleLinkClick(e, onNavigateReports)}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF8F4] border border-[#E2D9C9] text-[12.5px] font-semibold text-[#0D3021] transition-colors whitespace-nowrap w-full sm:w-auto"
+              >
+                <span>All Reports &amp; Publications</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#9A3B1E]" />
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ==================== RELATED ACTIVITIES INTERNAL LINKS ==================== */}
       {relatedActivities.length > 0 && (

@@ -1,6 +1,7 @@
 export type AppRoute =
   | { view: 'archive' }
   | { view: 'activity'; slug: string }
+  | { view: 'reports' }
   | { view: 'donate' }
   | { view: 'donation-success'; reference: string; token: string };
 
@@ -8,6 +9,7 @@ export type AppRoute =
  * Parses clean History API pathname routes:
  * - / or /activities -> Archive page
  * - /activities/:slug -> Individual Activity detail page
+ * - /reports -> Reports & Publications page (Annual Reports + Activity Reports)
  * - /donate -> Dedicated Garad Foundation Donation page
  * - /donation-success?ref=...&token=... -> Verified Donation Confirmation page
  */
@@ -17,6 +19,10 @@ export function parseCurrentRoute(): AppRoute {
   }
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  if (pathname === '/reports') {
+    return { view: 'reports' };
+  }
 
   if (pathname === '/donate') {
     return { view: 'donate' };
@@ -45,6 +51,10 @@ export function parseCurrentRoute(): AppRoute {
 
 export function getActivityPath(slug: string): string {
   return `/activities/${slug}`;
+}
+
+export function getReportsPath(): string {
+  return '/reports';
 }
 
 export function getDonatePath(): string {

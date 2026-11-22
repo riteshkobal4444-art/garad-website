@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  BookOpen,
   FileText,
   Handshake,
   HeartHandshake,
@@ -10,6 +11,7 @@ import {
 
 interface SiteFooterProps {
   onNavigateArchive: () => void;
+  onNavigateLearningHub: () => void;
   onNavigateNews: () => void;
   onNavigateVolunteer: () => void;
   onNavigateCsr: () => void;
@@ -19,6 +21,7 @@ interface SiteFooterProps {
 
 export function SiteFooter({
   onNavigateArchive,
+  onNavigateLearningHub,
   onNavigateNews,
   onNavigateVolunteer,
   onNavigateCsr,
@@ -62,6 +65,14 @@ export function SiteFooter({
             className="text-[#3C4640] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
           >
             Initiatives Archive
+          </a>
+          <a
+            href="/learning-hub"
+            onClick={(e) => handleLink(e, onNavigateLearningHub)}
+            className="inline-flex items-center gap-1.5 text-[#0D3021] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#0D3021]" />
+            <span>Learning Hub</span>
           </a>
           <a
             href="/in-the-news"

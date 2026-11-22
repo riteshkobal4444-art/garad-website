@@ -9,6 +9,10 @@ import {
 } from './data/activities';
 import { getCsrProjectBySlug } from './data/csrHub';
 import {
+  EnquiryOrganisationType,
+  getLearningProgrammeBySlug,
+} from './data/learningHub';
+import {
   AppRoute,
   getActivityPath,
   getCsrPartnershipsPath,
@@ -16,6 +20,8 @@ import {
   getDonatePath,
   getDonationSuccessPath,
   getInTheNewsPath,
+  getLearningHubPath,
+  getLearningProgrammePath,
   getReportsPath,
   getVolunteerPath,
   parseCurrentRoute,
@@ -24,6 +30,8 @@ import {
 import { VerifiedReceipt } from './utils/razorpayCheckout';
 import { Navbar, NavSectionKey } from './components/Navbar';
 import { InitiativesPage } from './components/InitiativesPage';
+import { LearningHubPage } from './components/LearningHubPage';
+import { ProgrammeDetailView } from './components/learningHub/ProgrammeDetailView';
 import { InTheNewsPage } from './components/InTheNewsPage';
 import { ActivityDetailPage } from './components/ActivityDetailPage';
 import { ReportsPage } from './components/ReportsPage';
@@ -50,6 +58,9 @@ import {
 
 function getNavKeyForRoute(r: AppRoute): NavSectionKey | null {
   if (r.view === 'donate' || r.view === 'donation-success') return null;
+  if (r.view === 'learning-hub' || r.view === 'learning-hub-programme') {
+    return 'learning-hub';
+  }
   if (r.view === 'in-the-news') return 'in-the-news';
   if (
     r.view === 'reports' ||
@@ -77,6 +88,14 @@ export default function App() {
   const [csrEnquiryPrefill, setCsrEnquiryPrefill] = useState<{
     project?: CsrPreferredProjectOption;
     area?: CsrAreaOption;
+    scrollToEnquiry?: boolean;
+  } | null>(null);
+
+  // Optional prefill state when navigating from a Learning Hub programme detail back to the enquiry form
+  const [learningHubPrefill, setLearningHubPrefill] = useState<{
+    programmeOfInterest?: string;
+    organisationType?: EnquiryOrganisationType;
+    customSessionRequirement?: string;
     scrollToEnquiry?: boolean;
   } | null>(null);
 
@@ -120,6 +139,28 @@ export default function App() {
     pushRoute(getActivityPath(slug));
     setRoute({ view: 'activity', slug });
     setActiveNav('initiatives');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToLearningHub = (prefill?: {
+    programmeOfInterest?: string;
+    organisationType?: EnquiryOrganisationType;
+    customSessionRequirement?: string;
+    scrollToEnquiry?: boolean;
+  }) => {
+    setLearningHubPrefill(prefill ? { ...prefill } : null);
+    pushRoute(getLearningHubPath());
+    setRoute({ view: 'learning-hub' });
+    setActiveNav('learning-hub');
+    if (!prefill?.scrollToEnquiry) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const navigateToLearningProgramme = (slug: string) => {
+    pushRoute(getLearningProgrammePath(slug));
+    setRoute({ view: 'learning-hub-programme', slug });
+    setActiveNav('learning-hub');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -193,6 +234,10 @@ export default function App() {
       navigateToArchive();
       return;
     }
+    if (key === 'learning-hub') {
+      navigateToLearningHub();
+      return;
+    }
     if (key === 'in-the-news') {
       navigateToInTheNews();
       return;
@@ -205,10 +250,16 @@ export default function App() {
     route.view === 'activity' ? getActivityBySlug(route.slug) : undefined;
   const currentCsrProject =
     route.view === 'csr-project' ? getCsrProjectBySlug(route.slug) : undefined;
+  const currentLearningProgramme =
+    route.view === 'learning-hub-programme'
+      ? getLearningProgrammeBySlug(route.slug)
+      : undefined;
 
   const isDonateFlow =
     route.view === 'donate' || route.view === 'donation-success';
   const isCsrFlow = route.view === 'csr' || route.view === 'csr-project';
+  const isLearningHubFlow =
+    route.view === 'learning-hub' || route.view === 'learning-hub-programme';
 
   return (
     <MotionConfig reducedMotion="user">
@@ -216,11 +267,13 @@ export default function App() {
         <Navbar
           activeNav={activeNav}
           isDonateRoute={isDonateFlow}
+          isLearningHubRoute={isLearningHubFlow}
           isNewsRoute={route.view === 'in-the-news'}
           isReportsRoute={route.view === 'reports'}
           isCsrRoute={isCsrFlow}
           isVolunteerRoute={route.view === 'volunteer'}
           onNavigateHome={navigateToArchive}
+          onNavigateLearningHub={() => navigateToLearningHub()}
           onNavigateNews={navigateToInTheNews}
           onSelectNav={handleSelectNav}
           onNavigateReports={navigateToReports}
@@ -250,6 +303,40 @@ export default function App() {
                   onSelectYear={setSelectedYear}
                   onSelectCategory={setSelectedCategory}
                   onNavigateActivity={navigateToActivity}
+                />
+              </motion.div>
+            ) : route.view === 'learning-hub' ? (
+              <motion.div
+                key="route-learning-hub"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <LearningHubPage
+                  initialEnquiryPrefill={learningHubPrefill}
+                  onNavigateProgramme={navigateToLearningProgramme}
+                  onNavigateArchive={navigateToArchive}
+                />
+              </motion.div>
+            ) : route.view === 'learning-hub-programme' &&
+              currentLearningProgramme ? (
+              <motion.div
+                key={`route-learning-programme-${currentLearningProgramme.slug}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <ProgrammeDetailView
+                  programme={currentLearningProgramme}
+                  onBackToHub={() => navigateToLearningHub()}
+                  onEnquireProgramme={(programmeOption) =>
+                    navigateToLearningHub({
+                      programmeOfInterest: programmeOption,
+                      scrollToEnquiry: true,
+                    })
+                  }
                 />
               </motion.div>
             ) : route.view === 'in-the-news' ? (
@@ -412,6 +499,7 @@ export default function App() {
 
         <SiteFooter
           onNavigateArchive={navigateToArchive}
+          onNavigateLearningHub={() => navigateToLearningHub()}
           onNavigateNews={navigateToInTheNews}
           onNavigateVolunteer={navigateToVolunteer}
           onNavigateCsr={() => navigateToCsr()}

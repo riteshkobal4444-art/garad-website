@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
+  BookOpen,
   ChevronDown,
   FileText,
   Handshake,
@@ -16,6 +17,7 @@ import { EASE_EDITORIAL } from './motion/MotionPrimitives';
 
 export type NavSectionKey =
   | 'initiatives'
+  | 'learning-hub'
   | 'in-the-news'
   | 'impact'
   | 'stories'
@@ -24,11 +26,13 @@ export type NavSectionKey =
 interface NavbarProps {
   activeNav: NavSectionKey | null;
   isDonateRoute?: boolean;
+  isLearningHubRoute?: boolean;
   isNewsRoute?: boolean;
   isReportsRoute?: boolean;
   isCsrRoute?: boolean;
   isVolunteerRoute?: boolean;
   onNavigateHome: () => void;
+  onNavigateLearningHub: () => void;
   onNavigateNews: () => void;
   onSelectNav: (key: NavSectionKey) => void;
   onNavigateReports: () => void;
@@ -40,6 +44,7 @@ interface NavbarProps {
 
 const NAV_ITEMS: { key: NavSectionKey; label: string }[] = [
   { key: 'initiatives', label: 'Initiatives' },
+  { key: 'learning-hub', label: 'Learning Hub' },
   { key: 'in-the-news', label: 'In the News' },
   { key: 'impact', label: 'Impact' },
   { key: 'stories', label: 'Stories' },
@@ -49,11 +54,13 @@ const NAV_ITEMS: { key: NavSectionKey; label: string }[] = [
 export function Navbar({
   activeNav,
   isDonateRoute = false,
+  isLearningHubRoute = false,
   isNewsRoute = false,
   isReportsRoute = false,
   isCsrRoute = false,
   isVolunteerRoute = false,
   onNavigateHome,
+  onNavigateLearningHub,
   onNavigateNews,
   onSelectNav,
   onNavigateReports,
@@ -97,6 +104,16 @@ export function Navbar({
     setMobileMenuOpen(false);
     setAboutMenuOpen(false);
     onNavigateHome();
+  };
+
+  const handleLearningHubLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
+    onNavigateLearningHub();
   };
 
   const handleNewsLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -177,11 +194,12 @@ export function Navbar({
         {/* Center Navigation Links */}
         <nav
           aria-label="Primary navigation"
-          className="hidden md:flex items-center gap-6 lg:gap-7"
+          className="hidden lg:flex items-center gap-5 xl:gap-7"
         >
           {NAV_ITEMS.map((item) => {
             const isActive =
               activeNav === item.key ||
+              (item.key === 'learning-hub' && isLearningHubRoute) ||
               (item.key === 'in-the-news' && isNewsRoute) ||
               (item.key === 'about' &&
                 (isReportsRoute || isCsrRoute || isVolunteerRoute));
@@ -204,6 +222,31 @@ export function Navbar({
                       layoutId="nav-active-underline"
                       transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                       className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-[#9A3B1E]"
+                    />
+                  )}
+                </a>
+              );
+            }
+
+            if (item.key === 'learning-hub') {
+              return (
+                <a
+                  key={item.key}
+                  href="/learning-hub"
+                  aria-current={isLearningHubRoute ? 'page' : undefined}
+                  onClick={handleLearningHubLink}
+                  className={`relative py-2 text-[13.5px] font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0D3021]/40 rounded-sm ${
+                    isActive
+                      ? 'text-[#0D3021] font-semibold'
+                      : 'text-[#555E58] hover:text-[#0D3021]'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-active-underline"
+                      transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                      className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-[#0D3021]"
                     />
                   )}
                 </a>
@@ -419,7 +462,7 @@ export function Navbar({
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
-            className="md:hidden w-9 h-9 rounded-lg border border-[#E4DDD0] bg-white text-[#142019] flex items-center justify-center cursor-pointer"
+            className="lg:hidden w-9 h-9 rounded-lg border border-[#E4DDD0] bg-white text-[#142019] flex items-center justify-center cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -434,17 +477,36 @@ export function Navbar({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: EASE_EDITORIAL }}
-            className="md:hidden absolute top-[68px] inset-x-0 bg-[#FAF8F4]/98 backdrop-blur-lg border-b border-[#E5DEC9] shadow-lg px-5 py-4"
+            className="lg:hidden absolute top-[68px] inset-x-0 bg-[#FAF8F4]/98 backdrop-blur-lg border-b border-[#E5DEC9] shadow-lg px-5 py-4"
           >
             <div className="flex flex-col gap-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   (activeNav === item.key ||
+                    (item.key === 'learning-hub' && isLearningHubRoute) ||
                     (item.key === 'in-the-news' && isNewsRoute)) &&
                   !(
                     item.key === 'about' &&
                     (isReportsRoute || isCsrRoute || isVolunteerRoute)
                   );
+                if (item.key === 'learning-hub') {
+                  return (
+                    <a
+                      key={item.key}
+                      href="/learning-hub"
+                      aria-current={isLearningHubRoute ? 'page' : undefined}
+                      onClick={handleLearningHubLink}
+                      className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-[#EEF4F0] text-[#0D3021] font-semibold'
+                          : 'text-[#4F5953] hover:bg-white'
+                      }`}
+                    >
+                      <BookOpen className="w-4 h-4 text-[#0D3021]" />
+                      <span>{item.label}</span>
+                    </a>
+                  );
+                }
                 if (item.key === 'in-the-news') {
                   return (
                     <a

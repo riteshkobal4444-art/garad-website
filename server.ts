@@ -22,6 +22,10 @@ import { DatabaseConfigError } from './server/donations/supabaseClient';
 import { checkRateLimit } from './server/donations/validation';
 import { submitCsrPartnershipEnquiry } from './server/csr/service';
 import { submitVolunteerApplication } from './server/volunteer/service';
+import {
+  getLearningHubPublicConfig,
+  submitLearningHubEnquiry,
+} from './server/learningHub/service';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -314,6 +318,37 @@ async function startServer() {
     }
   );
 
+  // Garad Learning Hub — Public submission readiness check (exposes no secrets)
+  app.get('/api/learning-hub/config', (_req: Request, res: Response) => {
+    return res.status(200).json(getLearningHubPublicConfig());
+  });
+
+  // Garad Learning Hub — Training / Session Enquiry Submission (Rate-Limited, Spam-Protected)
+  app.post(
+    '/api/learning-hub/enquiries',
+    createRateLimitMiddleware('learning-hub-enquiry', 6, 15 * 60_000),
+    async (req: Request, res: Response) => {
+      try {
+        const result = await submitLearningHubEnquiry(req.body);
+        return res.status(result.accepted ? 201 : 202).json(result);
+      } catch (err) {
+        if (err instanceof ServiceError) {
+          const withFields = err as ServiceError & {
+            fieldErrors?: Record<string, string>;
+          };
+          return res.status(err.statusCode).json({
+            error: err.message,
+            code: err.code,
+            ...(withFields.fieldErrors
+              ? { fieldErrors: withFields.fieldErrors }
+              : {}),
+          });
+        }
+        return handleApiError(res, err);
+      }
+    }
+  );
+
   // -------------------------------------------------------------------------
   // STATIC PDF REPORTS (strict application/pdf + nosniff; never SPA-fallback)
   // -------------------------------------------------------------------------
@@ -367,6 +402,33 @@ async function startServer() {
       return res.status(404).json({
         error: 'Requested activity image was not found.',
         code: 'ACTIVITY_IMAGE_NOT_FOUND',
+      });
+    }
+  );
+
+  // -------------------------------------------------------------------------
+  // STATIC LEARNING HUB PHOTOGRAPHY & SAMPLE PREVIEWS (strict 404 on miss)
+  // -------------------------------------------------------------------------
+  const learningHubAssetsDir = path.resolve(
+    __dirname,
+    isProduction ? 'dist/assets/learning-hub' : 'public/assets/learning-hub'
+  );
+  app.use(
+    '/assets/learning-hub',
+    express.static(learningHubAssetsDir, {
+      fallthrough: false,
+      maxAge: isProduction ? '7d' : 0,
+      setHeaders: (res) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      },
+    })
+  );
+  app.use(
+    '/assets/learning-hub',
+    (_err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+      return res.status(404).json({
+        error: 'Requested Learning Hub image was not found.',
+        code: 'LEARNING_HUB_IMAGE_NOT_FOUND',
       });
     }
   );

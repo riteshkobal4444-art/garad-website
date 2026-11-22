@@ -1,6 +1,8 @@
 export type AppRoute =
   | { view: 'archive' }
   | { view: 'activity'; slug: string }
+  | { view: 'learning-hub' }
+  | { view: 'learning-hub-programme'; slug: string }
   | { view: 'in-the-news' }
   | { view: 'reports' }
   | { view: 'csr' }
@@ -25,6 +27,18 @@ export function parseCurrentRoute(): AppRoute {
   }
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  if (pathname === '/learning-hub') {
+    return { view: 'learning-hub' };
+  }
+
+  const learningHubMatch = pathname.match(/^\/learning-hub\/([a-z0-9-]+)$/i);
+  if (learningHubMatch && learningHubMatch[1]) {
+    return {
+      view: 'learning-hub-programme',
+      slug: learningHubMatch[1].toLowerCase(),
+    };
+  }
 
   if (pathname === '/in-the-news' || pathname === '/garad-in-the-news') {
     return { view: 'in-the-news' };
@@ -74,6 +88,14 @@ export function parseCurrentRoute(): AppRoute {
 
 export function getActivityPath(slug: string): string {
   return `/activities/${slug}`;
+}
+
+export function getLearningHubPath(): string {
+  return '/learning-hub';
+}
+
+export function getLearningProgrammePath(slug: string): string {
+  return `/learning-hub/${slug}`;
 }
 
 export function getInTheNewsPath(): string {

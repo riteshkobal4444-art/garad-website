@@ -20,6 +20,8 @@ import {
 } from './server/donations/service';
 import { DatabaseConfigError } from './server/donations/supabaseClient';
 import { checkRateLimit } from './server/donations/validation';
+import { submitCsrPartnershipEnquiry } from './server/csr/service';
+import { submitVolunteerApplication } from './server/volunteer/service';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -109,6 +111,33 @@ async function startServer() {
         });
         return res.status(200).json(result);
       } catch (err) {
+        return handleApiError(res, err);
+      }
+    }
+  );
+
+  // Volunteer Application Submission (Dedicated 4mb JSON limit for optional <=2.5MB PDF resume)
+  app.post(
+    '/api/volunteer/applications',
+    createRateLimitMiddleware('volunteer-application', 6, 15 * 60_000),
+    express.json({ limit: '4mb' }),
+    async (req: Request, res: Response) => {
+      try {
+        const result = await submitVolunteerApplication(req.body);
+        return res.status(result.saved ? 201 : 202).json(result);
+      } catch (err) {
+        if (err instanceof ServiceError) {
+          const withFields = err as ServiceError & {
+            fieldErrors?: Record<string, string>;
+          };
+          return res.status(err.statusCode).json({
+            error: err.message,
+            code: err.code,
+            ...(withFields.fieldErrors
+              ? { fieldErrors: withFields.fieldErrors }
+              : {}),
+          });
+        }
         return handleApiError(res, err);
       }
     }
@@ -254,6 +283,32 @@ async function startServer() {
         );
         return res.status(200).send(csv);
       } catch (err) {
+        return handleApiError(res, err);
+      }
+    }
+  );
+
+  // Corporate CSR Partnership Enquiry Submission (Rate-Limited, Spam-Protected)
+  app.post(
+    '/api/csr/enquiries',
+    createRateLimitMiddleware('csr-enquiry', 6, 15 * 60_000),
+    async (req: Request, res: Response) => {
+      try {
+        const result = await submitCsrPartnershipEnquiry(req.body);
+        return res.status(201).json(result);
+      } catch (err) {
+        if (err instanceof ServiceError) {
+          const withFields = err as ServiceError & {
+            fieldErrors?: Record<string, string>;
+          };
+          return res.status(err.statusCode).json({
+            error: err.message,
+            code: err.code,
+            ...(withFields.fieldErrors
+              ? { fieldErrors: withFields.fieldErrors }
+              : {}),
+          });
+        }
         return handleApiError(res, err);
       }
     }

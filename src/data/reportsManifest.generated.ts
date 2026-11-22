@@ -11,9 +11,9 @@ export const GENERATED_ANNUAL_REPORTS: Record<string, GeneratedReportFileMeta> =
   'annual-report-2020-21': {
     fileUrl: '/assets/reports/annual/annual-report-2020-21.pdf',
     downloadFilename: 'Garad-Foundation-Annual-Report-2020-21.pdf',
-    fileSizeBytes: 30473,
-    fileSizeLabel: '30 KB',
-    pageCount: 10,
+    fileSizeBytes: 29606,
+    fileSizeLabel: '29 KB',
+    pageCount: 9,
   },
 };
 
@@ -21,43 +21,43 @@ export const GENERATED_ACTIVITY_REPORTS: Record<string, GeneratedReportFileMeta>
   "utsavachi-shidori": {
     "fileUrl": "/assets/reports/activities/utsavachi-shidori-report.pdf",
     "downloadFilename": "Garad-Foundation-Utsavachi-Shidori-Activity-Report.pdf",
-    "fileSizeBytes": 16318,
-    "fileSizeLabel": "16 KB",
-    "pageCount": 6
+    "fileSizeBytes": 15566,
+    "fileSizeLabel": "15 KB",
+    "pageCount": 5
   },
   "menstrual-hygiene-awareness": {
     "fileUrl": "/assets/reports/activities/menstrual-hygiene-awareness-report.pdf",
     "downloadFilename": "Garad-Foundation-Menstrual-Hygiene-Awareness-Activity-Report.pdf",
-    "fileSizeBytes": 16682,
+    "fileSizeBytes": 15939,
     "fileSizeLabel": "16 KB",
-    "pageCount": 6
+    "pageCount": 5
   },
   "online-essay-poetry-competition": {
     "fileUrl": "/assets/reports/activities/online-essay-poetry-report.pdf",
     "downloadFilename": "Garad-Foundation-Online-Essay-Poetry-Competition-Activity-Report.pdf",
-    "fileSizeBytes": 15372,
-    "fileSizeLabel": "15 KB",
-    "pageCount": 6
+    "fileSizeBytes": 14604,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
   },
   "online-videography-awareness-contest": {
     "fileUrl": "/assets/reports/activities/online-videography-report.pdf",
     "downloadFilename": "Garad-Foundation-Online-Videography-Contest-Activity-Report.pdf",
-    "fileSizeBytes": 15996,
-    "fileSizeLabel": "16 KB",
-    "pageCount": 6
+    "fileSizeBytes": 15222,
+    "fileSizeLabel": "15 KB",
+    "pageCount": 5
   },
   "mission-bharari-phase-1": {
     "fileUrl": "/assets/reports/activities/mission-bharari-phase-1-report.pdf",
     "downloadFilename": "Garad-Foundation-Mission-Bharari-Phase-1-Activity-Report.pdf",
-    "fileSizeBytes": 18152,
-    "fileSizeLabel": "18 KB",
-    "pageCount": 7
+    "fileSizeBytes": 17491,
+    "fileSizeLabel": "17 KB",
+    "pageCount": 6
   },
   "marathi-rajbhasha-divas-spardha": {
     "fileUrl": "/assets/reports/activities/marathi-rajbhasha-divas-report.pdf",
     "downloadFilename": "Garad-Foundation-Marathi-Rajbhasha-Divas-Spardha-Activity-Report.pdf",
-    "fileSizeBytes": 15588,
-    "fileSizeLabel": "15 KB",
-    "pageCount": 6
+    "fileSizeBytes": 14830,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
   }
 };

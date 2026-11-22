@@ -1,14 +1,18 @@
 import React from 'react';
-import { FileText, HeartHandshake, MapPin } from 'lucide-react';
+import { FileText, Handshake, HeartHandshake, MapPin, Users } from 'lucide-react';
 
 interface SiteFooterProps {
   onNavigateArchive: () => void;
+  onNavigateVolunteer: () => void;
+  onNavigateCsr: () => void;
   onNavigateReports: () => void;
   onNavigateDonate: () => void;
 }
 
 export function SiteFooter({
   onNavigateArchive,
+  onNavigateVolunteer,
+  onNavigateCsr,
   onNavigateReports,
   onNavigateDonate,
 }: SiteFooterProps) {
@@ -49,6 +53,22 @@ export function SiteFooter({
             className="text-[#3C4640] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
           >
             Initiatives Archive
+          </a>
+          <a
+            href="/volunteer"
+            onClick={(e) => handleLink(e, onNavigateVolunteer)}
+            className="inline-flex items-center gap-1.5 text-[#174C38] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
+          >
+            <Users className="w-3.5 h-3.5 text-[#174C38]" />
+            <span>Be a Volunteer</span>
+          </a>
+          <a
+            href="/csr-partnerships"
+            onClick={(e) => handleLink(e, onNavigateCsr)}
+            className="inline-flex items-center gap-1.5 text-[#0D3021] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
+          >
+            <Handshake className="w-3.5 h-3.5 text-[#0D3021]" />
+            <span>CSR Partnerships</span>
           </a>
           <a
             href="/reports"

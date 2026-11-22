@@ -2,6 +2,9 @@ export type AppRoute =
   | { view: 'archive' }
   | { view: 'activity'; slug: string }
   | { view: 'reports' }
+  | { view: 'csr' }
+  | { view: 'csr-project'; slug: string }
+  | { view: 'volunteer' }
   | { view: 'donate' }
   | { view: 'donation-success'; reference: string; token: string };
 
@@ -10,6 +13,8 @@ export type AppRoute =
  * - / or /activities -> Archive page
  * - /activities/:slug -> Individual Activity detail page
  * - /reports -> Reports & Publications page (Annual Reports + Activity Reports)
+ * - /csr-partnerships -> Corporate CSR Partnership & Project Funding Hub
+ * - /csr-partnerships/:slug -> Individual CSR Project funding profile
  * - /donate -> Dedicated Garad Foundation Donation page
  * - /donation-success?ref=...&token=... -> Verified Donation Confirmation page
  */
@@ -22,6 +27,19 @@ export function parseCurrentRoute(): AppRoute {
 
   if (pathname === '/reports') {
     return { view: 'reports' };
+  }
+
+  if (pathname === '/csr-partnerships') {
+    return { view: 'csr' };
+  }
+
+  const csrProjectMatch = pathname.match(/^\/csr-partnerships\/([a-z0-9-]+)$/i);
+  if (csrProjectMatch && csrProjectMatch[1]) {
+    return { view: 'csr-project', slug: csrProjectMatch[1].toLowerCase() };
+  }
+
+  if (pathname === '/volunteer' || pathname === '/be-a-volunteer') {
+    return { view: 'volunteer' };
   }
 
   if (pathname === '/donate') {
@@ -55,6 +73,18 @@ export function getActivityPath(slug: string): string {
 
 export function getReportsPath(): string {
   return '/reports';
+}
+
+export function getCsrPartnershipsPath(): string {
+  return '/csr-partnerships';
+}
+
+export function getCsrProjectPath(slug: string): string {
+  return `/csr-partnerships/${slug}`;
+}
+
+export function getVolunteerPath(): string {
+  return '/volunteer';
 }
 
 export function getDonatePath(): string {

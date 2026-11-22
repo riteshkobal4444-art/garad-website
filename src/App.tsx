@@ -7,12 +7,16 @@ import {
   FiscalYearId,
   getActivityBySlug,
 } from './data/activities';
+import { getCsrProjectBySlug } from './data/csrHub';
 import {
   AppRoute,
   getActivityPath,
+  getCsrPartnershipsPath,
+  getCsrProjectPath,
   getDonatePath,
   getDonationSuccessPath,
   getReportsPath,
+  getVolunteerPath,
   parseCurrentRoute,
   pushRoute,
 } from './utils/router';
@@ -21,8 +25,15 @@ import { Navbar, NavSectionKey } from './components/Navbar';
 import { InitiativesPage } from './components/InitiativesPage';
 import { ActivityDetailPage } from './components/ActivityDetailPage';
 import { ReportsPage } from './components/ReportsPage';
+import { CsrPartnershipsPage } from './components/CsrPartnershipsPage';
+import { CsrProjectDetailPage } from './components/CsrProjectDetailPage';
+import {
+  CsrAreaOption,
+  CsrPreferredProjectOption,
+} from './components/CsrEnquiryForm';
 import { DonatePage } from './components/DonatePage';
 import { DonationSuccessPage } from './components/DonationSuccessPage';
+import { VolunteerPage } from './components/VolunteerPage';
 import { SiteFooter } from './components/SiteFooter';
 import { AccountingExportModal } from './components/AccountingExportModal';
 import {
@@ -37,7 +48,14 @@ import {
 
 function getNavKeyForRoute(r: AppRoute): NavSectionKey | null {
   if (r.view === 'donate' || r.view === 'donation-success') return null;
-  if (r.view === 'reports') return 'about';
+  if (
+    r.view === 'reports' ||
+    r.view === 'csr' ||
+    r.view === 'csr-project' ||
+    r.view === 'volunteer'
+  ) {
+    return 'about';
+  }
   return 'initiatives';
 }
 
@@ -51,6 +69,13 @@ export default function App() {
   const [selectedYear, setSelectedYear] = useState<FiscalYearId>('2020-21');
   const [selectedCategory, setSelectedCategory] =
     useState<ActivityCategory>('All');
+
+  // Optional prefill state when navigating from a CSR project profile directly to the enquiry form
+  const [csrEnquiryPrefill, setCsrEnquiryPrefill] = useState<{
+    project?: CsrPreferredProjectOption;
+    area?: CsrAreaOption;
+    scrollToEnquiry?: boolean;
+  } | null>(null);
 
   // Transient in-memory receipt cache for smooth post-checkout transition
   const [lastVerifiedReceipt, setLastVerifiedReceipt] = useState<{
@@ -102,6 +127,34 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToCsr = (prefill?: {
+    project?: CsrPreferredProjectOption;
+    area?: CsrAreaOption;
+    scrollToEnquiry?: boolean;
+  }) => {
+    setCsrEnquiryPrefill(prefill ? { ...prefill } : null);
+    pushRoute(getCsrPartnershipsPath());
+    setRoute({ view: 'csr' });
+    setActiveNav('about');
+    if (!prefill?.scrollToEnquiry) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const navigateToCsrProject = (slug: string) => {
+    pushRoute(getCsrProjectPath(slug));
+    setRoute({ view: 'csr-project', slug });
+    setActiveNav('about');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToVolunteer = () => {
+    pushRoute(getVolunteerPath());
+    setRoute({ view: 'volunteer' });
+    setActiveNav('about');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navigateToDonate = () => {
     pushRoute(getDonatePath());
     setRoute({ view: 'donate' });
@@ -136,9 +189,12 @@ export default function App() {
 
   const currentActivity =
     route.view === 'activity' ? getActivityBySlug(route.slug) : undefined;
+  const currentCsrProject =
+    route.view === 'csr-project' ? getCsrProjectBySlug(route.slug) : undefined;
 
   const isDonateFlow =
     route.view === 'donate' || route.view === 'donation-success';
+  const isCsrFlow = route.view === 'csr' || route.view === 'csr-project';
 
   return (
     <MotionConfig reducedMotion="user">
@@ -147,9 +203,13 @@ export default function App() {
           activeNav={activeNav}
           isDonateRoute={isDonateFlow}
           isReportsRoute={route.view === 'reports'}
+          isCsrRoute={isCsrFlow}
+          isVolunteerRoute={route.view === 'volunteer'}
           onNavigateHome={navigateToArchive}
           onSelectNav={handleSelectNav}
           onNavigateReports={navigateToReports}
+          onNavigateCsr={() => navigateToCsr()}
+          onNavigateVolunteer={navigateToVolunteer}
           onNavigateDonate={navigateToDonate}
           onOpenPortal={() =>
             setDialog({ kind: 'section', section: 'portal' })
@@ -189,6 +249,51 @@ export default function App() {
                   onNavigateActivity={navigateToActivity}
                   onNavigateDonate={navigateToDonate}
                 />
+              </motion.div>
+            ) : route.view === 'csr' ? (
+              <motion.div
+                key="route-csr"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <CsrPartnershipsPage
+                  initialPrefill={csrEnquiryPrefill}
+                  onNavigateCsrProject={navigateToCsrProject}
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateReports={navigateToReports}
+                  onOpenAbout={() =>
+                    setDialog({ kind: 'section', section: 'about' })
+                  }
+                />
+              </motion.div>
+            ) : route.view === 'csr-project' && currentCsrProject ? (
+              <motion.div
+                key={`route-csr-project-${currentCsrProject.slug}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <CsrProjectDetailPage
+                  project={currentCsrProject}
+                  onNavigateCsrHub={navigateToCsr}
+                  onNavigateCsrProject={navigateToCsrProject}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateReports={navigateToReports}
+                />
+              </motion.div>
+            ) : route.view === 'volunteer' ? (
+              <motion.div
+                key="route-volunteer"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <VolunteerPage />
               </motion.div>
             ) : route.view === 'donate' ? (
               <motion.div
@@ -253,14 +358,14 @@ export default function App() {
                 className="max-w-2xl mx-auto px-6 py-24 text-center"
               >
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#9A3B1E]">
-                  Activity Archive · Record Not Found
+                  Garad Foundation · Record Not Found
                 </p>
                 <h1 className="mt-3 font-serif text-3xl sm:text-4xl font-bold text-[#171C19]">
-                  We couldn&apos;t locate that activity record
+                  We couldn&apos;t locate that page
                 </h1>
                 <p className="mt-3 text-[15px] leading-relaxed text-[#555E58]">
-                  The requested activity slug does not match a published record
-                  in the Garad Foundation Activity Report 2020–2026 archive.
+                  The requested URL does not match a published activity or CSR
+                  project profile.
                 </p>
                 <button
                   type="button"
@@ -277,6 +382,8 @@ export default function App() {
 
         <SiteFooter
           onNavigateArchive={navigateToArchive}
+          onNavigateVolunteer={navigateToVolunteer}
+          onNavigateCsr={() => navigateToCsr()}
           onNavigateReports={navigateToReports}
           onNavigateDonate={navigateToDonate}
         />
@@ -290,6 +397,8 @@ export default function App() {
           }}
           onNavigateActivity={navigateToActivity}
           onNavigateReports={navigateToReports}
+          onNavigateCsr={() => navigateToCsr()}
+          onNavigateVolunteer={navigateToVolunteer}
           onNavigateDonate={navigateToDonate}
         />
 

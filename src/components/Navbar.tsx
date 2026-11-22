@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronDown,
   FileText,
+  Handshake,
   Info,
   MapPin,
   Menu,
   User,
+  Users,
   X,
 } from 'lucide-react';
 import { EASE_EDITORIAL } from './motion/MotionPrimitives';
@@ -17,9 +19,13 @@ interface NavbarProps {
   activeNav: NavSectionKey | null;
   isDonateRoute?: boolean;
   isReportsRoute?: boolean;
+  isCsrRoute?: boolean;
+  isVolunteerRoute?: boolean;
   onNavigateHome: () => void;
   onSelectNav: (key: NavSectionKey) => void;
   onNavigateReports: () => void;
+  onNavigateCsr: () => void;
+  onNavigateVolunteer: () => void;
   onNavigateDonate: () => void;
   onOpenPortal: () => void;
 }
@@ -35,9 +41,13 @@ export function Navbar({
   activeNav,
   isDonateRoute = false,
   isReportsRoute = false,
+  isCsrRoute = false,
+  isVolunteerRoute = false,
   onNavigateHome,
   onSelectNav,
   onNavigateReports,
+  onNavigateCsr,
+  onNavigateVolunteer,
   onNavigateDonate,
   onOpenPortal,
 }: NavbarProps) {
@@ -88,6 +98,26 @@ export function Navbar({
     onNavigateReports();
   };
 
+  const handleCsrLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
+    onNavigateCsr();
+  };
+
+  const handleVolunteerLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
+    onNavigateVolunteer();
+  };
+
   const handleDonateLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
       return;
@@ -131,7 +161,8 @@ export function Navbar({
           {NAV_ITEMS.map((item) => {
             const isActive =
               activeNav === item.key ||
-              (item.key === 'about' && isReportsRoute);
+              (item.key === 'about' &&
+                (isReportsRoute || isCsrRoute || isVolunteerRoute));
 
             if (item.key === 'initiatives') {
               return (
@@ -213,6 +244,46 @@ export function Navbar({
                             </p>
                           </div>
                         </button>
+
+                        <a
+                          href="/volunteer"
+                          role="menuitem"
+                          aria-current={isVolunteerRoute ? 'page' : undefined}
+                          onClick={handleVolunteerLink}
+                          className={`mt-0.5 w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                            isVolunteerRoute ? 'bg-[#EEF4F0]' : 'hover:bg-white'
+                          }`}
+                        >
+                          <Users className="w-4 h-4 text-[#174C38] shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#171C19] leading-tight">
+                              Be a Volunteer
+                            </p>
+                            <p className="mt-0.5 text-[11.5px] text-[#66706A] leading-snug">
+                              Join our community &amp; apply online
+                            </p>
+                          </div>
+                        </a>
+
+                        <a
+                          href="/csr-partnerships"
+                          role="menuitem"
+                          aria-current={isCsrRoute ? 'page' : undefined}
+                          onClick={handleCsrLink}
+                          className={`mt-0.5 w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                            isCsrRoute ? 'bg-[#EEF4F0]' : 'hover:bg-white'
+                          }`}
+                        >
+                          <Handshake className="w-4 h-4 text-[#0D3021] shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-[#171C19] leading-tight">
+                              CSR Partnerships
+                            </p>
+                            <p className="mt-0.5 text-[11.5px] text-[#66706A] leading-snug">
+                              Project funding &amp; corporate hub
+                            </p>
+                          </div>
+                        </a>
 
                         <a
                           href="/reports"
@@ -322,7 +393,10 @@ export function Navbar({
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   activeNav === item.key &&
-                  !(item.key === 'about' && isReportsRoute);
+                  !(
+                    item.key === 'about' &&
+                    (isReportsRoute || isCsrRoute || isVolunteerRoute)
+                  );
                 return (
                   <button
                     key={item.key}
@@ -338,6 +412,34 @@ export function Navbar({
                   </button>
                 );
               })}
+
+              <a
+                href="/volunteer"
+                aria-current={isVolunteerRoute ? 'page' : undefined}
+                onClick={handleVolunteerLink}
+                className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isVolunteerRoute
+                    ? 'bg-[#EEF4F0] text-[#0D3021] font-semibold'
+                    : 'text-[#4F5953] hover:bg-white'
+                }`}
+              >
+                <Users className="w-4 h-4 text-[#174C38]" />
+                <span>Be a Volunteer</span>
+              </a>
+
+              <a
+                href="/csr-partnerships"
+                aria-current={isCsrRoute ? 'page' : undefined}
+                onClick={handleCsrLink}
+                className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isCsrRoute
+                    ? 'bg-[#EEF4F0] text-[#0D3021] font-semibold'
+                    : 'text-[#4F5953] hover:bg-white'
+                }`}
+              >
+                <Handshake className="w-4 h-4 text-[#0D3021]" />
+                <span>CSR Partnerships</span>
+              </a>
 
               <a
                 href="/reports"

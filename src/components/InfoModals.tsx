@@ -5,8 +5,10 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  Handshake,
   HeartHandshake,
   MapPin,
+  Users,
   X,
 } from 'lucide-react';
 import { ActivityMedia } from '../data/activities';
@@ -148,6 +150,8 @@ interface EditorialModalProps {
   onClose: () => void;
   onNavigateActivity: (slug: string) => void;
   onNavigateReports: () => void;
+  onNavigateCsr: () => void;
+  onNavigateVolunteer: () => void;
   onNavigateDonate: () => void;
 }
 
@@ -156,6 +160,8 @@ export function EditorialModal({
   onClose,
   onNavigateActivity,
   onNavigateReports,
+  onNavigateCsr,
+  onNavigateVolunteer,
   onNavigateDonate,
 }: EditorialModalProps) {
   const prefersReduced = useReducedMotion();
@@ -303,6 +309,36 @@ export function EditorialModal({
                   </p>
                   <div className="pt-1 flex flex-wrap items-center gap-2.5">
                     <a
+                      href="/volunteer"
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                          return;
+                        }
+                        e.preventDefault();
+                        onClose();
+                        onNavigateVolunteer();
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#174C38] hover:bg-[#103A2B] text-white text-xs font-semibold transition-colors"
+                    >
+                      <Users className="w-3.5 h-3.5" />
+                      <span>Be a Volunteer</span>
+                    </a>
+                    <a
+                      href="/csr-partnerships"
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                          return;
+                        }
+                        e.preventDefault();
+                        onClose();
+                        onNavigateCsr();
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-xs font-semibold transition-colors"
+                    >
+                      <Handshake className="w-3.5 h-3.5" />
+                      <span>CSR Partnerships</span>
+                    </a>
+                    <a
                       href="/reports"
                       onClick={(e) => {
                         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
@@ -312,9 +348,9 @@ export function EditorialModal({
                         onClose();
                         onNavigateReports();
                       }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-xs font-semibold transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white hover:bg-[#F3EDE2] border border-[#DDD5C7] text-[#171C19] text-xs font-semibold transition-colors"
                     >
-                      <FileText className="w-3.5 h-3.5" />
+                      <FileText className="w-3.5 h-3.5 text-[#9A3B1E]" />
                       <span>Reports &amp; Publications</span>
                     </a>
                     <a

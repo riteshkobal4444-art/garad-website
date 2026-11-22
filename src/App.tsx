@@ -15,6 +15,7 @@ import {
   getCsrProjectPath,
   getDonatePath,
   getDonationSuccessPath,
+  getInTheNewsPath,
   getReportsPath,
   getVolunteerPath,
   parseCurrentRoute,
@@ -23,6 +24,7 @@ import {
 import { VerifiedReceipt } from './utils/razorpayCheckout';
 import { Navbar, NavSectionKey } from './components/Navbar';
 import { InitiativesPage } from './components/InitiativesPage';
+import { InTheNewsPage } from './components/InTheNewsPage';
 import { ActivityDetailPage } from './components/ActivityDetailPage';
 import { ReportsPage } from './components/ReportsPage';
 import { CsrPartnershipsPage } from './components/CsrPartnershipsPage';
@@ -48,6 +50,7 @@ import {
 
 function getNavKeyForRoute(r: AppRoute): NavSectionKey | null {
   if (r.view === 'donate' || r.view === 'donation-success') return null;
+  if (r.view === 'in-the-news') return 'in-the-news';
   if (
     r.view === 'reports' ||
     r.view === 'csr' ||
@@ -65,8 +68,8 @@ export default function App() {
     getNavKeyForRoute(parseCurrentRoute())
   );
 
-  // Archive Filter State (defaults to 2020-21 populated edition + All categories)
-  const [selectedYear, setSelectedYear] = useState<FiscalYearId>('2020-21');
+  // Archive Filter State (defaults to All documented activities across populated editions)
+  const [selectedYear, setSelectedYear] = useState<FiscalYearId>('all');
   const [selectedCategory, setSelectedCategory] =
     useState<ActivityCategory>('All');
 
@@ -117,6 +120,13 @@ export default function App() {
     pushRoute(getActivityPath(slug));
     setRoute({ view: 'activity', slug });
     setActiveNav('initiatives');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToInTheNews = () => {
+    pushRoute(getInTheNewsPath());
+    setRoute({ view: 'in-the-news' });
+    setActiveNav('in-the-news');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -183,6 +193,10 @@ export default function App() {
       navigateToArchive();
       return;
     }
+    if (key === 'in-the-news') {
+      navigateToInTheNews();
+      return;
+    }
     setActiveNav(key);
     setDialog({ kind: 'section', section: key });
   };
@@ -202,10 +216,12 @@ export default function App() {
         <Navbar
           activeNav={activeNav}
           isDonateRoute={isDonateFlow}
+          isNewsRoute={route.view === 'in-the-news'}
           isReportsRoute={route.view === 'reports'}
           isCsrRoute={isCsrFlow}
           isVolunteerRoute={route.view === 'volunteer'}
           onNavigateHome={navigateToArchive}
+          onNavigateNews={navigateToInTheNews}
           onSelectNav={handleSelectNav}
           onNavigateReports={navigateToReports}
           onNavigateCsr={() => navigateToCsr()}
@@ -234,6 +250,20 @@ export default function App() {
                   onSelectYear={setSelectedYear}
                   onSelectCategory={setSelectedCategory}
                   onNavigateActivity={navigateToActivity}
+                />
+              </motion.div>
+            ) : route.view === 'in-the-news' ? (
+              <motion.div
+                key="route-in-the-news"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.32, ease: EASE_EDITORIAL }}
+              >
+                <InTheNewsPage
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateReports={navigateToReports}
                 />
               </motion.div>
             ) : route.view === 'reports' ? (
@@ -382,6 +412,7 @@ export default function App() {
 
         <SiteFooter
           onNavigateArchive={navigateToArchive}
+          onNavigateNews={navigateToInTheNews}
           onNavigateVolunteer={navigateToVolunteer}
           onNavigateCsr={() => navigateToCsr()}
           onNavigateReports={navigateToReports}

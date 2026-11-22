@@ -11,9 +11,9 @@ export const GENERATED_ANNUAL_REPORTS: Record<string, GeneratedReportFileMeta> =
   'annual-report-2020-21': {
     fileUrl: '/assets/reports/annual/annual-report-2020-21.pdf',
     downloadFilename: 'Garad-Foundation-Annual-Report-2020-21.pdf',
-    fileSizeBytes: 29606,
-    fileSizeLabel: '29 KB',
-    pageCount: 9,
+    fileSizeBytes: 5199660,
+    fileSizeLabel: '4.96 MB',
+    pageCount: 23,
   },
 };
 
@@ -57,6 +57,69 @@ export const GENERATED_ACTIVITY_REPORTS: Record<string, GeneratedReportFileMeta>
     "fileUrl": "/assets/reports/activities/marathi-rajbhasha-divas-report.pdf",
     "downloadFilename": "Garad-Foundation-Marathi-Rajbhasha-Divas-Spardha-Activity-Report.pdf",
     "fileSizeBytes": 14830,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "abhivyakta-2024": {
+    "fileUrl": "/assets/reports/activities/abhivyakta-2024-report.pdf",
+    "downloadFilename": "Garad-Foundation-Abhivyakta-2024-Activity-Report.pdf",
+    "fileSizeBytes": 15510,
+    "fileSizeLabel": "15 KB",
+    "pageCount": 5
+  },
+  "gudhi-shikshanachi": {
+    "fileUrl": "/assets/reports/activities/gudhi-shikshanachi-report.pdf",
+    "downloadFilename": "Garad-Foundation-Gudhi-Shikshanachi-Activity-Report.pdf",
+    "fileSizeBytes": 14098,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "sanitary-pad-distribution": {
+    "fileUrl": "/assets/reports/activities/sanitary-pad-distribution-2019-report.pdf",
+    "downloadFilename": "Garad-Foundation-Sanitary-Pad-Distribution-2019-Activity-Report.pdf",
+    "fileSizeBytes": 14648,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "chhatrapati-shivaji-maharaj-jayanti-2019": {
+    "fileUrl": "/assets/reports/activities/chhatrapati-shivaji-maharaj-jayanti-2019-report.pdf",
+    "downloadFilename": "Garad-Foundation-Chhatrapati-Shivaji-Maharaj-Jayanti-2019-Activity-Report.pdf",
+    "fileSizeBytes": 14198,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "selfie-with-bappa": {
+    "fileUrl": "/assets/reports/activities/selfie-with-bappa-report.pdf",
+    "downloadFilename": "Garad-Foundation-Selfie-With-Bappa-Activity-Report.pdf",
+    "fileSizeBytes": 14250,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "gyansetu": {
+    "fileUrl": "/assets/reports/activities/gyansetu-report.pdf",
+    "downloadFilename": "Garad-Foundation-Gyansetu-Activity-Report.pdf",
+    "fileSizeBytes": 14079,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "blood-donation-drive-2022": {
+    "fileUrl": "/assets/reports/activities/blood-donation-drive-2022-report.pdf",
+    "downloadFilename": "Garad-Foundation-Blood-Donation-Drive-2022-Activity-Report.pdf",
+    "fileSizeBytes": 14507,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "sandals-for-children": {
+    "fileUrl": "/assets/reports/activities/sandals-for-children-report.pdf",
+    "downloadFilename": "Garad-Foundation-Sandals-for-Children-Activity-Report.pdf",
+    "fileSizeBytes": 14725,
+    "fileSizeLabel": "14 KB",
+    "pageCount": 5
+  },
+  "project-savitri": {
+    "fileUrl": "/assets/reports/activities/project-savitri-report.pdf",
+    "downloadFilename": "Garad-Foundation-Project-Savitri-Activity-Report.pdf",
+    "fileSizeBytes": 14817,
     "fileSizeLabel": "14 KB",
     "pageCount": 5
   }

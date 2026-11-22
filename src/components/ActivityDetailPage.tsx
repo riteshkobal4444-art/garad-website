@@ -42,9 +42,10 @@ import { getPublishedActivityReportBySlug } from '../data/reportsRegistry';
 import { downloadVerifiedPdf } from '../utils/pdfDownload';
 import { getActivityPath, getReportsPath } from '../utils/router';
 import { usePageSeo } from '../utils/seo';
-import { ArchivalMediaFrame } from './ArchivalMediaFrame';
+import { ArchivalMediaFrame, IllustrativeImageBadge } from './ArchivalMediaFrame';
 import { MethodologyTimeline } from './MethodologyTimeline';
 import {
+  CompetitionTracksModule,
   DistributionBreakdownModule,
   MultilingualFormatsModule,
   ParticipantSplitModule,
@@ -207,7 +208,8 @@ export function ActivityDetailPage({
     return items;
   }, [activity]);
 
-  const hasHeroPhoto = Boolean(activity.heroImage.imagePath);
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const hasHeroPhoto = Boolean(activity.heroImage.imagePath) && !heroImageFailed;
 
   return (
     <main className="max-w-[1140px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-20">
@@ -277,7 +279,8 @@ export function ActivityDetailPage({
             className="w-1.5 h-1.5 rounded-full bg-[#9A3B1E]"
           />
           <span>
-            {activity.category} · {activity.archiveNumber}
+            {activity.categoryDisplayLabel || activity.category} ·{' '}
+            {activity.archiveNumber}
             {activity.isFlagship ? ' · FLAGSHIP INITIATIVE' : ''}
           </span>
         </motion.div>
@@ -292,6 +295,18 @@ export function ActivityDetailPage({
         >
           {activity.title}
         </motion.h1>
+
+        {/* Optional Subtitle */}
+        {activity.subtitle && (
+          <motion.p
+            initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.56, delay: 0.18, ease: EASE_EDITORIAL }}
+            className="mt-2.5 max-w-[780px] font-serif italic text-[19px] sm:text-[22px] leading-[1.4] text-[#9A3B1E]"
+          >
+            {activity.subtitle}
+          </motion.p>
+        )}
 
         {/* Introduction */}
         <motion.p
@@ -373,8 +388,14 @@ export function ActivityDetailPage({
           </motion.div>
         )}
 
-        {/* Three Metadata Cards */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        {/* Quick Facts / Metadata Cards */}
+        <div
+          className={`mt-8 grid grid-cols-1 ${
+            activity.metadataCards.length === 4
+              ? 'sm:grid-cols-2 lg:grid-cols-4'
+              : 'sm:grid-cols-3'
+          } gap-4 sm:gap-5`}
+        >
           {activity.metadataCards.map((meta, idx) => (
             <motion.div
               key={meta.id}
@@ -450,8 +471,17 @@ export function ActivityDetailPage({
               style={prefersReduced ? undefined : { y: photoParallaxY }}
               className="w-full h-full scale-[1.03] will-change-transform"
             >
-              <ArchivalMediaFrame media={activity.heroImage} variant="hero" />
+              <ArchivalMediaFrame
+                media={activity.heroImage}
+                variant="hero"
+                hideSampleBadge
+                onImageError={setHeroImageFailed}
+              />
             </motion.div>
+
+            {hasHeroPhoto && activity.heroImage.imageType === 'sample' && (
+              <IllustrativeImageBadge className="bottom-4 left-4" />
+            )}
 
             {hasHeroPhoto && (
               <div className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#082417]/75 backdrop-blur-sm text-white text-[11px] font-medium">
@@ -464,9 +494,14 @@ export function ActivityDetailPage({
 
         {/* Factual Caption Strip Below Image */}
         <Reveal delay={0.1} y={10} className="mt-3.5">
-          <div className="inline-flex items-start sm:items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F4F0E7] border border-[#EAE2D4] text-[12px] text-[#555E58]">
+          <div className="inline-flex flex-wrap items-start sm:items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F4F0E7] border border-[#EAE2D4] text-[12px] text-[#555E58]">
             <CheckCircle2 className="w-3.5 h-3.5 text-[#9A3B1E] shrink-0 mt-0.5 sm:mt-0" />
             <span>{activity.heroImage.caption}</span>
+            {activity.heroImage.imageType === 'sample' && (
+              <span className="inline-flex items-center gap-1 rounded bg-[#143B2A]/10 border border-[#143B2A]/20 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-[0.11em] text-[#143B2A]">
+                ILLUSTRATIVE IMAGE
+              </span>
+            )}
           </div>
         </Reveal>
       </section>
@@ -484,6 +519,7 @@ export function ActivityDetailPage({
       <ParticipantSplitModule activity={activity} />
       <MultilingualFormatsModule activity={activity} />
       <VideographyHighlightsModule activity={activity} />
+      <CompetitionTracksModule activity={activity} />
 
       {/* ==================== TWO-COLUMN EDITORIAL BODY + STICKY SIDEBAR ==================== */}
       <section className="mt-14 sm:mt-16 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_330px] gap-8 lg:gap-9 items-start">
@@ -657,7 +693,7 @@ export function ActivityDetailPage({
                 {activity.gallery.map((media, idx) => {
                   const hasPhoto = Boolean(media.imagePath);
                   const lightboxIdx = hasPhoto
-                    ? realPhotos.findIndex((p) => p.imagePath === media.imagePath)
+                    ? realPhotos.indexOf(media)
                     : -1;
 
                   return (
@@ -718,37 +754,47 @@ export function ActivityDetailPage({
             <div className="chrome-card chrome-card-lift rounded-[20px] bg-white p-5 sm:p-6">
               <div className="flex items-center justify-between gap-2 pb-4 border-b border-[#F0EBE1]">
                 <span className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#9A3B1E]">
-                  DOCUMENTED FIGURES
+                  {activity.verifiedMetrics.length > 0
+                    ? 'DOCUMENTED FIGURES'
+                    : 'ARCHIVAL RECORD'}
                 </span>
                 <span className="text-[11px] font-semibold text-[#5E6862] tabular-nums">
                   {activity.yearDisplay}
                 </span>
               </div>
 
-              {/* 2 Key Stat Boxes */}
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {activity.verifiedMetrics.map((m) => (
-                  <motion.div
-                    key={m.label}
-                    whileHover={prefersReduced ? undefined : { y: -3 }}
-                    transition={{ duration: 0.2, ease: EASE_EDITORIAL }}
-                    className="rounded-xl bg-[#F7F4ED] border border-[#ECE5D7] p-3.5 shadow-[0_2px_6px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_20px_-12px_rgba(13,48,33,0.18)] transition-shadow"
-                  >
-                    <p
-                      className={`font-serif text-[28px] font-bold leading-none tabular-nums ${
-                        m.accent === 'terracotta'
-                          ? 'text-[#9A3B1E]'
-                          : 'text-[#171C19]'
-                      }`}
+              {/* Verified Key Stat Boxes (only rendered when factual figures exist) */}
+              {activity.verifiedMetrics.length > 0 && (
+                <div
+                  className={`mt-4 grid ${
+                    activity.verifiedMetrics.length === 1
+                      ? 'grid-cols-1'
+                      : 'grid-cols-2'
+                  } gap-3`}
+                >
+                  {activity.verifiedMetrics.map((m) => (
+                    <motion.div
+                      key={m.label}
+                      whileHover={prefersReduced ? undefined : { y: -3 }}
+                      transition={{ duration: 0.2, ease: EASE_EDITORIAL }}
+                      className="rounded-xl bg-[#F7F4ED] border border-[#ECE5D7] p-3.5 shadow-[0_2px_6px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_20px_-12px_rgba(13,48,33,0.18)] transition-shadow"
                     >
-                      {m.value}
-                    </p>
-                    <p className="mt-2 text-[11.5px] leading-snug font-medium text-[#5E6862]">
-                      {m.label}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
+                      <p
+                        className={`font-serif text-[28px] font-bold leading-none tabular-nums ${
+                          m.accent === 'terracotta'
+                            ? 'text-[#9A3B1E]'
+                            : 'text-[#171C19]'
+                        }`}
+                      >
+                        {m.value}
+                      </p>
+                      <p className="mt-2 text-[11.5px] leading-snug font-medium text-[#5E6862]">
+                        {m.label}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
 
               {/* Metrics Disclaimer when specified (e.g. Mission Bharari internal reporting note) */}
               {activity.metricsDisclaimer && (
@@ -760,7 +806,14 @@ export function ActivityDetailPage({
 
               {/* Outputs / Kit Composition / Summary Checklist */}
               {activity.outputs && activity.outputs.items.length > 0 && (
-                <div className="mt-5 pt-4 border-t border-[#F0EBE1]">
+                <div
+                  className={
+                    activity.verifiedMetrics.length > 0 ||
+                    activity.metricsDisclaimer
+                      ? 'mt-5 pt-4 border-t border-[#F0EBE1]'
+                      : 'mt-4'
+                  }
+                >
                   <p className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[#7A827D] mb-3">
                     {activity.outputs.sidebarTitle}
                   </p>
@@ -857,11 +910,12 @@ export function ActivityDetailPage({
                   GARAD FOUNDATION · THANE
                 </p>
                 <h3 className="mt-2 font-serif text-[22px] font-bold leading-[1.22] text-white">
-                  Support Grassroots Outreach
+                  {activity.getInvolvedCopy?.heading ??
+                    'Support Grassroots Outreach'}
                 </h3>
                 <p className="mt-2.5 text-[13px] leading-[1.65] text-[#C5D8CD]">
-                  Connect with our Thane volunteer coordination desk to volunteer
-                  or support upcoming education, welfare, and youth initiatives.
+                  {activity.getInvolvedCopy?.description ??
+                    'Connect with our Thane volunteer coordination desk to volunteer or support upcoming education, welfare, and youth initiatives.'}
                 </p>
 
                 <motion.a

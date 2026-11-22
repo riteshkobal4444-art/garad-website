@@ -128,10 +128,10 @@ export function CivicTrajectory3D({
       <div className="relative z-10 flex items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-2 text-[13px] font-semibold text-[#17241D]">
           <Crosshair className="w-4 h-4 text-[#9A3B1E]" />
-          <span>Archive Timeline 2020–2026</span>
+          <span>Financial Year Timeline</span>
         </div>
-        <span className="px-2.5 py-1 rounded-md bg-white/90 border border-[#D8E5DD] text-[11px] font-medium text-[#526058] shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
-          Report Horizon
+        <span className="px-2.5 py-1 rounded-md bg-white/90 border border-[#D8E5DD] text-[11px] font-medium text-[#526058] shadow-[0_1px_2px_rgba(0,0,0,0.03)] tabular-nums">
+          Apr–Mar · FY 2018–2026
         </span>
       </div>
 
@@ -147,7 +147,7 @@ export function CivicTrajectory3D({
                 }
               : undefined
           }
-          className="relative h-[228px] sm:h-[246px] flex items-end justify-between gap-2 sm:gap-3 px-1 sm:px-2"
+          className="relative h-[228px] sm:h-[246px] flex items-end justify-between gap-1 sm:gap-2 px-0.5 sm:px-1.5"
         >
           <div
             aria-hidden="true"
@@ -161,10 +161,10 @@ export function CivicTrajectory3D({
             const showFloatingBadge =
               isHovered ||
               (isSelected && !hoveredId) ||
-              (selectedYear === 'all' && pillar.id === '2020-21' && !hoveredId);
+              (selectedYear === 'all' && pillar.id === '2019-2020' && !hoveredId);
 
             const baseHeightPx = Math.round(
-              76 + (pillar.heightPercent / 100) * 112
+              62 + (pillar.heightPercent / 100) * 124
             );
 
             return (
@@ -259,7 +259,7 @@ export function CivicTrajectory3D({
                   }
                   whileTap={prefersReduced ? undefined : { scale: 0.96 }}
                   style={{ height: `${baseHeightPx}px` }}
-                  className="relative w-full max-w-[54px] origin-bottom cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A3B1E] focus-visible:ring-offset-2 rounded-t-sm"
+                  className="relative w-full max-w-[42px] origin-bottom cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A3B1E] focus-visible:ring-offset-2 rounded-t-sm"
                 >
                   {isSelected && (
                     <motion.div
@@ -331,7 +331,7 @@ export function CivicTrajectory3D({
 
                 {/* Year Label */}
                 <span
-                  className={`mt-2 text-[11px] tabular-nums tracking-tight transition-colors ${
+                  className={`mt-2 text-[9.5px] sm:text-[10.5px] tabular-nums tracking-tight whitespace-nowrap transition-colors ${
                     isSelected
                       ? 'text-[#0B2418] font-bold'
                       : palette.labelColor
@@ -350,11 +350,11 @@ export function CivicTrajectory3D({
         <div className="flex items-center gap-2 max-w-[280px]">
           <MousePointerClick className="w-3.5 h-3.5 text-[#9A3B1E] shrink-0" />
           <span className="leading-snug">
-            Click a year pillar to filter documented archive editions
+            Click a financial year pillar to filter documented activities
           </span>
         </div>
         <span className="font-mono text-[10.5px] tracking-wider text-[#6A7870] uppercase">
-          2020–21 POPULATED
+          FY 2018–2026 HORIZON
         </span>
       </div>
     </motion.div>

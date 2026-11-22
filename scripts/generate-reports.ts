@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import PDFDocument from 'pdfkit';
 import { ACTIVITIES, ActivityRecord } from '../src/data/activities';
+import { ANNUAL_REPORT_2020_21 } from '../src/data/annualReport2020_21';
+import { generateAnnualReportPdf } from './pdf/annualReportDesignSystem';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,6 +81,46 @@ const ACTIVITY_FILENAME_MAP: Record<
     fileSlug: 'marathi-rajbhasha-divas-report.pdf',
     downloadFilename:
       'Garad-Foundation-Marathi-Rajbhasha-Divas-Spardha-Activity-Report.pdf',
+  },
+  'abhivyakta-2024': {
+    fileSlug: 'abhivyakta-2024-report.pdf',
+    downloadFilename: 'Garad-Foundation-Abhivyakta-2024-Activity-Report.pdf',
+  },
+  'gudhi-shikshanachi': {
+    fileSlug: 'gudhi-shikshanachi-report.pdf',
+    downloadFilename: 'Garad-Foundation-Gudhi-Shikshanachi-Activity-Report.pdf',
+  },
+  'sanitary-pad-distribution': {
+    fileSlug: 'sanitary-pad-distribution-2019-report.pdf',
+    downloadFilename:
+      'Garad-Foundation-Sanitary-Pad-Distribution-2019-Activity-Report.pdf',
+  },
+  'chhatrapati-shivaji-maharaj-jayanti-2019': {
+    fileSlug: 'chhatrapati-shivaji-maharaj-jayanti-2019-report.pdf',
+    downloadFilename:
+      'Garad-Foundation-Chhatrapati-Shivaji-Maharaj-Jayanti-2019-Activity-Report.pdf',
+  },
+  'selfie-with-bappa': {
+    fileSlug: 'selfie-with-bappa-report.pdf',
+    downloadFilename: 'Garad-Foundation-Selfie-With-Bappa-Activity-Report.pdf',
+  },
+  gyansetu: {
+    fileSlug: 'gyansetu-report.pdf',
+    downloadFilename: 'Garad-Foundation-Gyansetu-Activity-Report.pdf',
+  },
+  'blood-donation-drive-2022': {
+    fileSlug: 'blood-donation-drive-2022-report.pdf',
+    downloadFilename:
+      'Garad-Foundation-Blood-Donation-Drive-2022-Activity-Report.pdf',
+  },
+  'sandals-for-children': {
+    fileSlug: 'sandals-for-children-report.pdf',
+    downloadFilename:
+      'Garad-Foundation-Sandals-for-Children-Activity-Report.pdf',
+  },
+  'project-savitri': {
+    fileSlug: 'project-savitri-report.pdf',
+    downloadFilename: 'Garad-Foundation-Project-Savitri-Activity-Report.pdf',
   },
 };
 
@@ -1069,6 +1111,258 @@ function getActivityBeneficiaryDetails(activity: ActivityRecord): {
         ],
       };
 
+    case 'abhivyakta-2024':
+      return {
+        targetGroup:
+          'Students from schools across Thane district (5th to 7th and 8th to 10th standard elocution participants and folk dance participants).',
+        actualReach:
+          'Elocution competition: 60 students; Folk dance competition: 75+ students (19 February 2024, Thane, Maharashtra).',
+        keyAchievement:
+          "Delivered a district-level event in Thane celebrating public speaking inspired by Chhatrapati Shivaji Maharaj (60 students) and traditional Maharashtrian folk dance (75+ students), concluding with an award ceremony.",
+        tableHeaders: [
+          'Competition Track',
+          'Documented Participation',
+          'Format & Recognition',
+        ],
+        tableRows: [
+          [
+            'Elocution Competition (Voices of Inspiration)',
+            '60 students',
+            '5th to 7th & 8th to 10th standard | Topics inspired by Chhatrapati Shivaji Maharaj',
+          ],
+          [
+            'Folk Dance Competition (A Celebration of Culture)',
+            '75+ students',
+            'Traditional Maharashtrian folk dance in colourful costumes',
+          ],
+          [
+            'Award Ceremony & Recognition',
+            'Winning & participating students',
+            'Trophies, certificates, book sets and cash prizes',
+          ],
+        ],
+        outcomesNote:
+          'Documented outputs record 60 students in the elocution competition and 75+ students in the folk dance competition, kept as separate participant groups per source records. Winners received trophies, certificates, book sets and cash prizes.',
+        challenges: [
+          'Coordinating two district-level student competitions (elocution across two grade categories and traditional Maharashtrian folk dance) on a single event day in Thane.',
+          'Providing a supportive stage for students to develop public speaking skills and cultural expression.',
+        ],
+        acknowledgements: [
+          'Participating students from schools across Thane district.',
+          'Garad Foundation organising volunteers and event coordinators.',
+        ],
+      };
+
+    case 'gudhi-shikshanachi':
+      return {
+        targetGroup:
+          'Underprivileged children living in difficult circumstances near a garbage dumping ground.',
+        actualReach:
+          'Stationery kits (pencil boxes, compass boxes, notebooks and educational materials) distributed (exact child count not specified in source record).',
+        keyAchievement:
+          'Provided essential school supplies and conducted encouraging volunteer conversations about the importance of education on 20 March 2019.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Initiative Date', '20 March 2019'],
+          [
+            'Supplies Distributed',
+            'Pencil boxes, compass boxes, notebooks and other essential educational materials',
+          ],
+          [
+            'Volunteer Engagement',
+            'Direct conversations with children on the importance of education and building a better future',
+          ],
+        ],
+        outcomesNote:
+          'Exact beneficiary count and precise geographic location are not recorded in the historical source document and are intentionally not estimated.',
+        challenges: [
+          'Supporting children living near a garbage dumping ground who face significant barriers to schooling.',
+        ],
+        acknowledgements: [
+          'Garad Foundation volunteers who distributed stationery and interacted with the children.',
+        ],
+      };
+
+    case 'sanitary-pad-distribution':
+      return {
+        targetGroup: 'Tribal women in Mamnoli village, Kalyan taluka, Maharashtra.',
+        actualReach:
+          'Sanitary pad distribution and menstrual hygiene awareness conversations conducted (exact beneficiary count not specified in source record).',
+        keyAchievement:
+          'Partnered with Aple Thane, Aple Foundation on 28 April 2019 to distribute sanitary pads and hold open conversations addressing myths and taboos around menstruation.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Date & Location', '28 April 2019 | Mamnoli village, Kalyan taluka, Maharashtra'],
+          ['Collaborating Organisation', 'Aple Thane, Aple Foundation'],
+          [
+            'Activities Conducted',
+            'Sanitary pad distribution and open conversations addressing menstrual health, myths and taboos',
+          ],
+        ],
+        outcomesNote:
+          'Exact beneficiary count is not recorded in the 2019 source document and is intentionally omitted. Inspired by discussions during the International Women’s Day session.',
+        challenges: [
+          'Breaking silence and long-standing taboos surrounding menstruation to foster open community dialogue.',
+        ],
+        acknowledgements: [
+          'Collaborating NGO partner Aple Thane, Aple Foundation and Garad Foundation volunteers.',
+        ],
+      };
+
+    case 'chhatrapati-shivaji-maharaj-jayanti-2019':
+      return {
+        targetGroup: 'Students residing at the Sharadashram hostel facility.',
+        actualReach:
+          'Interactive teaching sessions and discussions conducted (participant count not specified in source record).',
+        keyAchievement:
+          'Organised Garad Foundation’s first Chhatrapati Shivaji Maharaj Jayanti celebration on 19 February 2019, inspiring students with values of courage, governance and social justice.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Date & Venue', '19 February 2019 | Sharadashram hostel facility'],
+          [
+            'Format',
+            'Interactive teaching sessions and student discussions on leadership, bravery, governance and social justice',
+          ],
+        ],
+        outcomesNote:
+          'Participant numbers are not specified in the historical source record and are intentionally not estimated.',
+        challenges: [
+          'Designing interactive historical sessions that connect leadership and social-justice values to students’ own lives.',
+        ],
+        acknowledgements: [
+          'Students and staff at Sharadashram hostel facility and Garad Foundation volunteers.',
+        ],
+      };
+
+    case 'selfie-with-bappa':
+      return {
+        targetGroup: 'Youth and community members celebrating Ganeshotsav on social media.',
+        actualReach:
+          'Social media environmental awareness campaign using #SelfieWithBappa (exact participation figure not specified in source record).',
+        keyAchievement:
+          'Promoted clay and natural, biodegradable Ganpati idols during Ganeshotsav 2019 while sparking conversations on reducing festival pollution from plaster of Paris.',
+        tableHeaders: ['Campaign Element', 'Documented Detail'],
+        tableRows: [
+          ['Campaign Year', '2019'],
+          ['Hashtag & Format', '#SelfieWithBappa social media photo-sharing awareness campaign'],
+          [
+            'Environmental Focus',
+            'Promoting clay and biodegradable Ganpati idols and raising awareness about plaster of Paris pollution',
+          ],
+        ],
+        outcomesNote:
+          'Exact campaign dates and total participant count are not specified in the source record and are intentionally omitted.',
+        challenges: [
+          'Encouraging environmentally responsible festival choices through engaging youth-friendly social media outreach.',
+        ],
+        acknowledgements: [
+          'Community members who shared photographs of eco-friendly Ganpati idols under #SelfieWithBappa.',
+        ],
+      };
+
+    case 'gyansetu':
+      return {
+        targetGroup: 'Youth and school children accessing community study libraries.',
+        actualReach:
+          'Collected books distributed to 7 study libraries (15 October 2021).',
+        keyAchievement:
+          'Collected storybooks, novels, textbooks and reference materials from community donors and distributed them across 7 study libraries to cultivate reading habits.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Launch Date', '15 October 2021'],
+          ['Libraries Supported', '7 study libraries'],
+          [
+            'Book Categories',
+            'Storybooks, novels, textbooks and reference materials',
+          ],
+        ],
+        outcomesNote:
+          'Verified distribution reach is 7 study libraries. Total book count and individual library names are not specified in the source document.',
+        challenges: [
+          'Collecting a diverse mix of storybooks, novels, textbooks and reference materials suited to different student needs.',
+        ],
+        acknowledgements: [
+          'Community book donors, receiving study libraries, and Garad Foundation volunteers.',
+        ],
+      };
+
+    case 'blood-donation-drive-2022':
+      return {
+        targetGroup:
+          'Community blood donors supporting emergency and hospital blood supply.',
+        actualReach: '35 voluntary blood donors participated (20 February 2022).',
+        keyAchievement:
+          'Honoured Chhatrapati Shivaji Maharaj Jayanti by uniting 35 blood donors in collaboration with Kai. Wamanrao Oak Blood Bank and raising voluntary blood donation awareness.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Date', '20 February 2022'],
+          ['Verified Donors', '35 voluntary blood donors'],
+          ['Collaborating Partner', 'Kai. Wamanrao Oak Blood Bank'],
+        ],
+        outcomesNote:
+          'Verified participation count is 35 voluntary blood donors supporting Kai. Wamanrao Oak Blood Bank.',
+        challenges: [
+          'Mobilising voluntary donors and raising awareness about the critical role of blood donation in medical emergencies and surgeries.',
+        ],
+        acknowledgements: [
+          'All 35 blood donors, Kai. Wamanrao Oak Blood Bank team, and Garad Foundation volunteers.',
+        ],
+      };
+
+    case 'sandals-for-children':
+      return {
+        targetGroup:
+          'School-going children in Khardi village, Maharashtra (rural area with a predominantly tribal population).',
+        actualReach:
+          '250+ pairs of brand-new sandals distributed and fitted on-site (21 June 2022).',
+        keyAchievement:
+          'Distributed more than 250 pairs of sandals in Khardi village with careful volunteer sizing so children walking long distances to school commute safely and comfortably.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Date & Location', '21 June 2022 | Khardi village, Maharashtra'],
+          ['Verified Quantity', '250+ pairs of brand-new sandals'],
+          [
+            'Distribution Approach',
+            'Volunteers helped each child try on sandals and adjust straps for proper fit',
+          ],
+        ],
+        outcomesNote:
+          'Verified output is 250+ pairs of brand-new sandals distributed to children in Khardi village.',
+        challenges: [
+          'Fitting each child individually with suitable sandal sizes across more than 250 pairs in a rural community setting.',
+        ],
+        acknowledgements: [
+          'Garad Foundation volunteers and community members in Khardi village.',
+        ],
+      };
+
+    case 'project-savitri':
+      return {
+        targetGroup:
+          'Women and children in the tribal parts of Kharidi village, Maharashtra.',
+        actualReach:
+          '140+ women and children received warm and rain-protective clothing (27 August 2023).',
+        keyAchievement:
+          'Collected, sorted and distributed sweaters, jackets, sturdy shoes and raincoats to over 140 women and children in Kharidi village during the rainy season.',
+        tableHeaders: ['Activity Element', 'Documented Detail'],
+        tableRows: [
+          ['Date & Location', '27 August 2023 | Kharidi village, Maharashtra'],
+          ['Verified Beneficiaries', '140+ women and children'],
+          [
+            'Clothing Distributed',
+            'Sweaters, jackets, sturdy shoes and raincoats (community-donated, volunteer-sorted)',
+          ],
+        ],
+        outcomesNote:
+          'Verified output is 140+ women and children supported in Kharidi village (exact spelling preserved from source document).',
+        challenges: [
+          'Sorting and organising community-donated clothing to ensure every garment was usable and weather-appropriate during the rainy season.',
+        ],
+        acknowledgements: [
+          'Community clothing donors and Garad Foundation volunteers who sorted and distributed items in Kharidi village.',
+        ],
+      };
+
     case 'marathi-rajbhasha-divas-spardha':
     default:
       return {
@@ -1130,26 +1424,39 @@ async function generateActivityReportPdf(activity: ActivityRecord) {
     },
   });
 
+  const editionLabel = activity.yearDisplay.includes('–')
+    ? `FY ${activity.yearDisplay}`
+    : activity.yearDisplay;
+
+  const coverMetaRows: [string, string][] = [
+    ['Project / Activity', activity.title],
+    ['Programme Category', activity.categoryDisplayLabel || activity.category],
+    ['Date / Reporting Period', activity.date],
+  ];
+  if (activity.location) {
+    coverMetaRows.push(['Location', activity.location]);
+  }
+  coverMetaRows.push(
+    ['Document Reference', `${activity.archiveNumber} (${editionLabel})`],
+    ['Reporting Organisation', 'Garad Foundation, Thane, Maharashtra']
+  );
+
   // 1. COVER PAGE
   drawCoverPage(doc, {
     documentType: `INDIVIDUAL ACTIVITY REPORT  |  ${activity.archiveNumber}`,
-    categoryLabel: `${activity.category}  |  FY ${activity.yearDisplay}`,
+    categoryLabel: `${activity.categoryDisplayLabel || activity.category}  |  ${editionLabel}`,
     title: activity.title,
     subtitle: activity.cardDescription,
     reportingPeriod: activity.date,
-    location: activity.location,
-    publicationNote: `Activity Report Edition FY ${activity.yearDisplay}`,
-    imagePath: activity.heroImage.imagePath,
+    location: activity.location || 'Garad Foundation Archive',
+    publicationNote: `Activity Report Edition ${editionLabel}`,
+    imagePath:
+      activity.heroImage.imageType === 'sample'
+        ? null
+        : activity.heroImage.imagePath,
     imageCaption: activity.heroImage.caption,
     safeguardingNote: activity.heroImage.safeguardingNote,
-    metaRows: [
-      ['Project / Activity', activity.title],
-      ['Programme Category', activity.category],
-      ['Date / Reporting Period', activity.date],
-      ['Location', activity.location],
-      ['Document Reference', `${activity.archiveNumber} (FY ${activity.yearDisplay})`],
-      ['Reporting Organisation', 'Garad Foundation, Thane, Maharashtra'],
-    ],
+    metaRows: coverMetaRows,
   });
 
   // PAGE 2+: STRUCTURED REPORT SECTIONS
@@ -1172,15 +1479,17 @@ async function generateActivityReportPdf(activity: ActivityRecord) {
     [0.32, 0.68]
   );
 
-  // Key verified metrics strip
-  drawMetricStrip(
-    doc,
-    activity.verifiedMetrics.map((m) => ({
-      value: m.value,
-      label: m.label,
-      sub: `FY ${activity.yearDisplay}`,
-    }))
-  );
+  // Key verified metrics strip (rendered only when numeric figures are documented)
+  if (activity.verifiedMetrics.length > 0) {
+    drawMetricStrip(
+      doc,
+      activity.verifiedMetrics.map((m) => ({
+        value: m.value,
+        label: m.label,
+        sub: editionLabel,
+      }))
+    );
+  }
 
   // 3. BACKGROUND AND PROJECT NEED
   drawSectionHeading(doc, '02', 'Background and Project Need');
@@ -1198,12 +1507,14 @@ async function generateActivityReportPdf(activity: ActivityRecord) {
 
   // 5. IMPLEMENTATION DETAILS
   drawSectionHeading(doc, '04', 'Implementation Details');
-  const implRows: string[][] = [
-    ['Implementation Date / Period', activity.date],
-    ['Location & Geography', activity.location],
+  const implRows: string[][] = [['Implementation Date / Period', activity.date]];
+  if (activity.location) {
+    implRows.push(['Location & Geography', activity.location]);
+  }
+  implRows.push(
     ['Target Group', details.targetGroup],
-    ['Activities Conducted', activity.whatWeDid.heading],
-  ];
+    ['Activities Conducted', activity.whatWeDid.heading]
+  );
   if (activity.implementation.deliveryModel) {
     implRows.push(['Delivery Model', activity.implementation.deliveryModel]);
   }
@@ -1332,6 +1643,7 @@ async function generateActivityReportPdf(activity: ActivityRecord) {
   const availablePhotos = [activity.heroImage, ...activity.gallery].filter(
     (m) =>
       m.imagePath &&
+      m.imageType !== 'sample' &&
       fs.existsSync(path.join(ROOT_DIR, 'public', m.imagePath.replace(/^\//, '')))
   );
   if (availablePhotos.length > 0) {
@@ -1423,287 +1735,25 @@ async function generateActivityReportPdf(activity: ActivityRecord) {
 async function generateAnnualReport2020_21Pdf() {
   const fileName = 'annual-report-2020-21.pdf';
   const targetPath = path.join(ANNUAL_DIR, fileName);
-  const fyActivities = ACTIVITIES.filter((a) => a.year === '2020-21');
 
-  const doc = new PDFDocument({
-    size: 'A4',
-    margins: {
-      top: PAGE.marginTop,
-      bottom: PAGE.marginBottom,
-      left: PAGE.marginX,
-      right: PAGE.marginX,
-    },
-    bufferPages: true,
-    info: {
-      Title: 'Garad Foundation - Annual Report 2020-21',
-      Author: 'Garad Foundation, Thane, Maharashtra',
-      Subject:
-        'Consolidated institutional Annual Report of Garad Foundation for Financial Year 2020-21',
-      Keywords:
-        'Garad Foundation, Annual Report 2020-21, CSR, Nonprofit, Thane, Maharashtra, Education, Community Welfare',
-      Creator: 'Garad Foundation Institutional Reporting System',
-    },
-  });
-
-  // 1. COVER PAGE
-  drawCoverPage(doc, {
-    documentType: 'INSTITUTIONAL ANNUAL REPORT  |  FINANCIAL YEAR 2020-21',
-    categoryLabel: 'ANNUAL REPORT  |  FY 2020-21',
-    title: 'Annual Report 2020-21',
-    subtitle:
-      'A consolidated institutional overview of Garad Foundation programmes, documented field activities, youth initiatives, and governance practices during Financial Year 2020-21.',
-    reportingPeriod: 'Financial Year 2020-21 (with documented early-2020 founding drives)',
-    location: 'Thane, Kalyan, Bhor Taluka (Pune District) & Online across Maharashtra',
-    publicationNote: 'Institutional Publication for CSR & Donor Review',
-    imagePath: null,
-    imageCaption:
-      'Documenting six verified grassroots initiatives across community welfare, women and menstrual health, rural primary education, public health awareness, and youth literary and cultural engagement.',
-    safeguardingNote:
-      'Prepared strictly from verified Garad Foundation activity records. Safeguarding-cleared photography is archived separately and shared in compliance with participant consent protocols.',
-    metaRows: [
-      ['Publication Title', 'Garad Foundation Annual Report 2020-21'],
-      ['Reporting Period', 'Financial Year 2020-21'],
-      ['Documented Initiatives', '6 Completed & Documented Activities'],
-      ['Geographic Footprint', 'Thane, Mamnoli (Kalyan), Bhor Taluka (Pune), and Online (Maharashtra)'],
-      ['Headquarters', 'Thane, Maharashtra, India'],
-      ['Intended Audience', 'CSR Teams, Institutional Donors, Grant Reviewers & Community Partners'],
-    ],
-  });
-
-  // PAGE 2: LEADERSHIP MESSAGE & ABOUT GARAD FOUNDATION
-  doc.addPage();
-  doc.y = PAGE.marginTop;
-
-  // 2. FOUNDER / LEADERSHIP MESSAGE
-  drawSectionHeading(doc, '01', 'Leadership & Editorial Foreword');
-  drawParagraph(
-    doc,
-    'Financial Year 2020-21 tested every community across Maharashtra. Alongside everyday gaps in rural schooling, urban food insecurity, and women\'s health awareness, the COVID-19 pandemic disrupted classrooms, livelihoods, and in-person community spaces.'
-  );
-  drawParagraph(
-    doc,
-    'Through this period, Garad Foundation remained focused on disciplined, responsive grassroots action led by young volunteers in Thane. From packing 175 home-prepared meal boxes at city signals on the first day of 2020, to partnering with Aapla Thane Foundation for menstrual hygiene sessions in Mamnoli, to conducting a ten-school baseline survey in Bhor Taluka for Mission Bharari - Phase 1, each effort was guided by direct listening rather than assumptions.'
-  );
-  drawParagraph(
-    doc,
-    'This Annual Report consolidates our documented activities for 2020-21 in a clear, verifiable format suitable for CSR partners, grant reviewers, and individual supporters. Where records are internal, pending verification, or maintained outside this public document (such as audited financial statements), we state so transparently.'
+  const stats = await generateAnnualReportPdf(
+    ANNUAL_REPORT_2020_21,
+    targetPath,
+    ROOT_DIR
   );
 
-  // 3. ABOUT GARAD FOUNDATION
-  drawSectionHeading(doc, '02', 'About Garad Foundation');
-  drawParagraph(
-    doc,
-    'Garad Foundation is a youth-driven nonprofit organisation based in Thane, Maharashtra, India. Founded on the principle that consistent small efforts build lasting community dignity, the Foundation mobilises student and youth volunteers to address practical gaps in education, women\'s health awareness, community welfare, public health communication, and regional language and culture.'
-  );
-  drawDataTable(
-    doc,
-    ['Institutional Pillar', 'Summary'],
-    [
-      ['Core Purpose', 'Enable equitable access to foundational education, dignified community welfare, preventive health awareness, and constructive youth expression.'],
-      ['Operating Approach', 'Baseline-informed rural outreach, zero-intermediary volunteer delivery, community in-kind mobilisation, and transparent digital engagement.'],
-      ['Primary Focus Areas', 'Education, Women & Community Development, Health & Wellbeing, Youth Development, and Marathi Language & Culture.'],
-      ['Geographic Presence (FY 2020-21)', 'Thane urban intersections, Mamnoli (Kalyan), Bhor Taluka (Pune District), and online statewide participation across Maharashtra.'],
-    ],
-    [0.3, 0.7]
-  );
-
-  // 4. ORGANISATION AND GOVERNANCE
-  drawSectionHeading(doc, '03', 'Organisation and Governance');
-  drawParagraph(
-    doc,
-    'Garad Foundation operates through a volunteer-led core team headquartered in Thane, supported by field coordinators and community volunteers who execute needs assessments, resource mobilisation, logistics, and evaluation.'
-  );
-  drawBulletList(doc, [
-    'Core Team Oversight: Plans annual priorities, reviews youth competition entries against defined evaluation rubrics, and maintains activity records.',
-    'Field Coordination: Dedicated field coordinators conduct school-level baseline surveys (such as across 10 Zilla Parishad schools in Bhor Taluka) prior to procurement and distribution.',
-    'Volunteer Participation: Youth volunteers lead meal packing, digital crowdfunding, stationery kit assembly, and local outreach. (Note: Consolidated historical volunteer headcount across multi-year cohorts is marked as undergoing internal registry verification.)',
-    'Safeguarding & Consent Policy: Identifiable photographs of children, students, and health-camp participants are withheld from public publication until documented institutional or guardian consent is verified.',
-  ]);
-
-  // 5. YEAR AT A GLANCE
-  drawSectionHeading(doc, '04', 'Year at a Glance (FY 2020-21 Verified Outputs)');
-  drawMetricStrip(doc, [
-    { value: '6', label: 'Documented Activities', sub: 'FY 2020-21 Edition' },
-    { value: '220', label: 'Students Supported', sub: '10 ZP Schools (Bhor)' },
-    { value: '200', label: 'Health Drive Reach', sub: '150 Women, 50 Girls' },
-    { value: '175', label: 'Meal Boxes Shared', sub: '3 Thane Signals' },
-  ]);
-
-  drawDataTable(
-    doc,
-    ['Programme / Activity', 'Verified Quantitative Indicator', 'Reporting Basis'],
-    [
-      ['Utsavachi Shidori', '175 individual food boxes (80 + 95 rounds)', 'Documented distribution log'],
-      ['Menstrual Hygiene & Pad Drive', '200 participants (150 tribal women, 50 adolescent girls)', 'Joint partner attendance record'],
-      ['Online Essay & Poetry Contest', '30 youth participants (Marathi, Hindi, English)', 'Verified digital entry register'],
-      ['Online Videography Contest', '20 youth creator submissions; 2 named winners', 'Core Team evaluation record'],
-      ['Mission Bharari - Phase 1', '220 students across 10 Zilla Parishad schools', 'Internal 2020-21 activity report'],
-      ['Marathi Rajbhasha Divas Spardha', '8 named awardees documented (Vakta Spardha)', 'Documented awardee list'],
-    ],
-    [0.32, 0.4, 0.28]
-  );
-
-  drawCalloutBox(
-    doc,
-    'Non-Duplication Methodology Note',
-    'Indicator figures above are reported strictly at the individual activity level. Because online youth competitions and community drives serve distinct cohorts without a unified unique-ID registry, Garad Foundation does not sum outputs across unrelated programmes into a single deduplicated beneficiary headcount.',
-    'sage'
-  );
-
-  // 6. PROGRAMME OVERVIEW
-  drawSectionHeading(doc, '05', 'Programme Overview');
-  drawHorizontalBarViz(doc, 'FY 2020-21 Documented Activities by Programme Area (Total: 6)', [
-    { label: 'Education (Mission Bharari - Phase 1)', value: 1, display: '1 flagship initiative (220 students)', color: COLORS.forest900 },
-    { label: 'Women & Health Awareness (Mamnoli Drive)', value: 1, display: '1 rural outreach (200 participants)', color: COLORS.terracotta },
-    { label: 'Community Welfare (Utsavachi Shidori)', value: 1, display: '1 urban relief drive (175 food boxes)', color: COLORS.forest800 },
-    { label: 'Public Health & Youth (Videography Contest)', value: 1, display: '1 online campaign (20 creators)', color: COLORS.ochre },
-    { label: 'Youth Development & Language/Culture (Essay & Marathi Spardha)', value: 2, display: '2 multilingual contests', color: COLORS.forest800 },
-  ]);
-
-  drawBulletList(doc, [
-    'Education: Targeted rural Zilla Parishad school support informed by on-ground baseline surveys (Mission Bharari - Phase 1).',
-    'Women & Community Development: Dignified menstrual hygiene awareness, sanitary kit access, and urban meal solidarity.',
-    'Health & Wellbeing: Local-language preventive health awareness, basic anaemia/reproductive health symptom referrals, and peer COVID-19 communication.',
-    'Youth Development & Cultural Heritage: Accessible multilingual digital writing, short-form awareness filmmaking, and Marathi elocution platforms.',
-  ]);
-
-  // 7. DETAILED ACTIVITY HIGHLIGHTS
-  drawSectionHeading(doc, '06', 'Detailed Activity Highlights (FY 2020-21)');
-  for (const act of fyActivities) {
-    const det = getActivityBeneficiaryDetails(act);
-    ensureSpace(doc, 118);
-    drawSubheading(doc, `${act.archiveNumber}: ${act.title}`);
-    drawDataTable(
-      doc,
-      ['Attribute', 'Documented Record'],
-      [
-        ['Category & Date', `${act.category}  |  ${act.date}`],
-        ['Location', act.location],
-        ['Objective', act.objectives[0]?.description || act.needAndRationale.heading],
-        ['Beneficiaries / Reach', det.actualReach],
-        ['Key Outputs', act.outputs?.items.slice(0, 3).join('; ') || act.cardKeyStat],
-        ['Outcomes Scope', det.outcomesNote],
-      ],
-      [0.24, 0.76]
+  if (!stats.usedOriginalLogo) {
+    console.warn(
+      '  [NOTE] Official logo file not yet found at public/assets/branding/garad-foundation-logo.png — rendered octagonal logo placeholder slot on every page.'
     );
   }
 
-  // 8. GEOGRAPHIC REACH
-  drawSectionHeading(doc, '07', 'Geographic Reach');
-  drawDataTable(
-    doc,
-    ['Region / District', 'Specific Locations Covered', 'Activities Delivered'],
-    [
-      ['Thane District (Urban)', 'Teen Haath Naka, Majiwada & Nitin Company Signals', 'Utsavachi Shidori (175 food boxes)'],
-      ['Thane District (Rural / Kalyan)', 'Mamnoli, Kalyan', 'Menstrual Hygiene Awareness & Pad Distribution (200 participants)'],
-      ['Pune District (Rural)', '10 Zilla Parishad Schools, Bhor Taluka', 'Mission Bharari - Phase 1 (220 students)'],
-      ['Statewide Digital Reach', 'Online (WhatsApp, Email & Digital Platforms)', 'Essay & Poetry Contest, COVID-19 Videography Contest, Marathi Rajbhasha Divas Spardha'],
-    ],
-    [0.25, 0.37, 0.38]
-  );
-
-  // 9. MONITORING, EVALUATION AND LEARNING
-  drawSectionHeading(doc, '08', 'Monitoring, Evaluation and Documentation Practices');
-  drawParagraph(
-    doc,
-    'Garad Foundation emphasises factual, transparent documentation aligned with CSR accountability standards rather than promotional claims:'
-  );
-  drawBulletList(doc, [
-    'Pre-Implementation Baseline Surveys: Prior to Mission Bharari - Phase 1, a field coordinator surveyed all 10 participating Zilla Parishad schools in Bhor Taluka to record actual student stationery requirements.',
-    'Structured Distribution Logs: Field drives maintain round-wise and cohort-wise logs (e.g., 80 + 95 meal boxes in Thane; 150 tribal women + 50 adolescent girls in Mamnoli).',
-    'Rubric-Based Evaluation: Youth competitions are evaluated by the Core Team using explicit criteria (such as creativity, clarity, communication, content, fluency, and emotional expression).',
-    'Honest Output vs. Outcome Separation: Activity outputs are documented conservatively and never overstated as audited long-term impact where longitudinal studies have not been conducted.',
-  ]);
-
-  // 10. FINANCIAL OVERVIEW
-  drawSectionHeading(doc, '09', 'Financial Overview');
-  drawParagraph(
-    doc,
-    'During FY 2020-21, Garad Foundation mobilised resources primarily through community-rooted, low-overhead channels documented in individual activity records:'
-  );
-  drawBulletList(doc, [
-    'In-Kind Community Support: Utsavachi Shidori operated as a 100% in-kind, zero-budget initiative supported directly by household contributions.',
-    'Peer Digital Crowdfunding: Mission Bharari - Phase 1 was funded 100% through volunteer-led digital crowdfunding via WhatsApp, social media, and personal outreach.',
-    'Collaborative Field Execution: Menstrual hygiene outreach in Mamnoli was conducted in partnership with Aapla Thane Foundation.',
-  ]);
-  drawCalloutBox(
-    doc,
-    'Audited Financial Statements Disclosure',
-    'Consolidated audited Income & Expenditure statements, Balance Sheets, and programme-wise financial ledgers for FY 2020-21 are not embedded in this public summary edition. Certified copies of audited financial statements are shared directly with corporate CSR teams, institutional donors, and regulatory reviewers upon formal request.',
-    'cream'
-  );
-
-  // 11. DONORS, VOLUNTEERS AND PARTNERS
-  drawSectionHeading(doc, '10', 'Partners, Volunteers and Community Contributors');
-  drawBulletList(doc, [
-    'Aapla Thane Foundation: Collaborating field partner for the Menstrual Hygiene Awareness & Sanitary Pad Distribution drive in Mamnoli, Kalyan.',
-    'Zilla Parishad School Communities (Bhor Taluka): School leadership and teachers who facilitated baseline assessment and COVID-safe stationery handover across 10 schools.',
-    'Youth Volunteers & Community Supporters: Student volunteers, households contributing in-kind meals, and digital crowdfunding donors who sustained grassroots operations throughout 2020-21.',
-  ]);
-
-  // 12. CHALLENGES AND LEARNINGS
-  drawSectionHeading(doc, '11', 'Challenges and Learnings');
-  drawBulletList(doc, [
-    'Pandemic Continuity: Lockdowns restricted in-person gatherings; pivoting rapidly to WhatsApp, email, and recorded-speech formats preserved youth engagement without requiring expensive digital tools.',
-    'Rural Material Gaps: Baseline school mapping in Bhor Taluka underscored that basic physical stationery remained a primary barrier even before digital-learning disparities.',
-    'Safeguarding & Privacy Discipline: Health outreach with adolescent girls and rural school visits reinforced the necessity of strict written consent before publishing identifiable photographs.',
-    'Structured Record-Keeping: Transitioning from informal volunteer logs to standardised CSR-ready activity documentation ensures long-term institutional accountability.',
-  ]);
-
-  // 13. PRIORITIES FOR THE NEXT FINANCIAL YEAR
-  drawSectionHeading(doc, '12', 'Priorities for the Next Financial Year');
-  drawBulletList(doc, [
-    'Strengthen rural education support by building on the baseline-survey and volunteer-delivery blueprint piloted in Mission Bharari - Phase 1.',
-    'Expand women\'s health awareness and preventive hygiene outreach through trusted local partnerships in underserved rural and tribal hamlets.',
-    'Standardise project-level financial tracking, attendance verification, and consent-cleared photographic archiving across every initiative.',
-    'Publish subsequent financial-year annual reports (FY 2021-22 onward) progressively once underlying activity records and financial statements are reviewed and approved.',
-  ]);
-
-  // 14. COMPLIANCE AND ORGANISATIONAL INFORMATION
-  drawSectionHeading(doc, '13', 'Compliance and Organisational Information');
-  drawDataTable(
-    doc,
-    ['Compliance Parameter', 'Status / Verification Protocol'],
-    [
-      ['Legal Name & Base', 'Garad Foundation, Thane, Maharashtra, India'],
-      ['Section 80G Status', 'Garad Foundation holds Section 80G approval. Deduction eligibility for donors is governed by applicable Income Tax Act rules and statutory Form 10BD / Form 10BE compliance.'],
-      ['Statutory Registrations (Trust/Society, 12A, 80G, CSR-1)', 'Registration numbers and official certificates are maintained on institutional record and provided directly during corporate CSR due-diligence onboarding (not approximated in this public edition).'],
-      ['Reporting Standard Note', 'This publication is Garad Foundation\'s institutional NGO Annual Report informed by CSR transparency principles (it is not an MCA corporate Board Annexure II filing).'],
-    ],
-    [0.34, 0.66]
-  );
-
-  // 15. CONTACT INFORMATION AND CLOSING PAGE
-  drawSectionHeading(doc, '14', 'Contact Information & Closing Note');
-  drawParagraph(
-    doc,
-    'Garad Foundation welcomes dialogue with corporate CSR departments, institutional foundations, academic partners, and volunteers committed to grounded, transparent grassroots work in Maharashtra.'
-  );
-  drawDataTable(
-    doc,
-    ['Channel', 'Details'],
-    [
-      ['Organisation', 'Garad Foundation'],
-      ['Location', 'Thane, Maharashtra, India'],
-      ['Digital Activity Archive', '/activities (Official documented initiatives archive)'],
-      ['Reports & Publications Portal', '/reports (Annual Reports and individual Activity Reports)'],
-      ['Contribution & Support Portal', '/donate (Verified online contributions & 80G acknowledgement workflow)'],
-    ],
-    [0.32, 0.68]
-  );
-
-  applyRunningHeadersAndFooters(
-    doc,
-    'Annual Report 2020-21',
-    'Garad Foundation  |  Annual Report 2020-21  |  FY 2020-21'
-  );
-
-  const stats = await writePdfToFile(doc, targetPath);
   return {
-    id: 'annual-report-2020-21',
+    id: ANNUAL_REPORT_2020_21.id,
     fileUrl: `/assets/reports/annual/${fileName}`,
     downloadFilename: 'Garad-Foundation-Annual-Report-2020-21.pdf',
-    ...stats,
+    fileSizeBytes: stats.fileSizeBytes,
+    pageCount: stats.pageCount,
   };
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   motion,
   useMotionValue,
@@ -8,9 +8,12 @@ import {
 import {
   ArrowRight,
   Award,
+  BookOpen,
   Calendar,
   FilePenLine,
   GraduationCap,
+  Heart,
+  Leaf,
   MapPin,
   Package,
   Star,
@@ -19,7 +22,7 @@ import {
 } from 'lucide-react';
 import { ActivityRecord } from '../data/activities';
 import { getActivityPath } from '../utils/router';
-import { ArchivalMediaFrame } from './ArchivalMediaFrame';
+import { ArchivalMediaFrame, IllustrativeImageBadge } from './ArchivalMediaFrame';
 import {
   EASE_EDITORIAL,
   Tilt3DCard,
@@ -46,6 +49,12 @@ function StatIcon({ type }: { type: ActivityRecord['cardStatIcon'] }) {
       return <GraduationCap className="w-3.5 h-3.5 text-[#9A3B1E] shrink-0" />;
     case 'award':
       return <Award className="w-3.5 h-3.5 text-[#9A3B1E] shrink-0" />;
+    case 'heart':
+      return <Heart className="w-3.5 h-3.5 text-[#9A3B1E] shrink-0" />;
+    case 'leaf':
+      return <Leaf className="w-3.5 h-3.5 text-[#143B2A] shrink-0" />;
+    case 'book':
+      return <BookOpen className="w-3.5 h-3.5 text-[#143B2A] shrink-0" />;
   }
 }
 
@@ -57,6 +66,7 @@ export function ActivityCard({
   const prefersReduced = useReducedMotion();
   const canHover3D = useCanHover3D();
   const imageWrapRef = useRef<HTMLDivElement>(null);
+  const [imageFailed, setImageFailed] = useState(false);
 
   const rawImgX = useMotionValue(0);
   const rawImgY = useMotionValue(0);
@@ -129,7 +139,12 @@ export function ActivityCard({
               style={canHover3D ? { x: imgX, y: imgY } : undefined}
               className="w-full h-full scale-[1.03] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06]"
             >
-              <ArchivalMediaFrame media={activity.cardImage} variant="card" />
+              <ArchivalMediaFrame
+                media={activity.cardImage}
+                variant="card"
+                hideSampleBadge
+                onImageError={setImageFailed}
+              />
             </motion.div>
 
             {/* Top Badges */}
@@ -151,6 +166,13 @@ export function ActivityCard({
               </div>
             )}
 
+            {/* Illustrative Preview Label bottom-left (shown only on sample images) */}
+            {activity.cardImage.imagePath &&
+              activity.cardImage.imageType === 'sample' &&
+              !imageFailed && (
+                <IllustrativeImageBadge className="bottom-3 left-3" />
+              )}
+
             {/* Activity Number Tag bottom-right */}
             <span className="absolute bottom-3 right-3 z-10 px-2 py-0.5 rounded bg-white/92 backdrop-blur-sm font-mono text-[10px] font-medium tracking-wider text-[#26322B] shadow-sm">
               {activity.archiveNumber}
@@ -159,19 +181,23 @@ export function ActivityCard({
 
           {/* Card Content Body */}
           <div className="flex flex-col flex-1 p-5 sm:p-6">
-            {/* Date & Location line */}
+            {/* Date & Location line (location shown only when available) */}
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px] font-medium text-[#6C746F]">
               <span className="inline-flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-[#9A3B1E]/85 shrink-0" />
                 <span>{activity.cardDate}</span>
               </span>
-              <span aria-hidden="true" className="text-[#C4BCB0]">
-                ·
-              </span>
-              <span className="inline-flex items-center gap-1 min-w-0">
-                <MapPin className="w-3 h-3 text-[#7D8680] shrink-0" />
-                <span className="truncate">{activity.cardLocation}</span>
-              </span>
+              {activity.cardLocation && (
+                <>
+                  <span aria-hidden="true" className="text-[#C4BCB0]">
+                    ·
+                  </span>
+                  <span className="inline-flex items-center gap-1 min-w-0">
+                    <MapPin className="w-3 h-3 text-[#7D8680] shrink-0" />
+                    <span className="truncate">{activity.cardLocation}</span>
+                  </span>
+                </>
+              )}
             </div>
 
             {/* Authentic Activity Title */}

@@ -122,7 +122,9 @@ const ACTIVITY_REPORTS_REGISTRY: ActivityReportDocument[] = ACTIVITIES.map(
       archiveNumber: activity.archiveNumber,
       title: activity.title,
       shortTitle: activity.shortTitle,
-      financialYear: `FY ${activity.yearDisplay}`,
+      financialYear: activity.yearDisplay.includes('–')
+        ? `FY ${activity.yearDisplay}`
+        : activity.yearDisplay,
       dateLabel: activity.date,
       location: activity.cardLocation,
       category: mapActivityToReportCategory(activity),

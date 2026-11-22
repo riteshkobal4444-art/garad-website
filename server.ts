@@ -345,6 +345,33 @@ async function startServer() {
   );
 
   // -------------------------------------------------------------------------
+  // STATIC ACTIVITY PHOTOGRAPHY & SAMPLE PREVIEWS (never SPA-fallback to HTML)
+  // -------------------------------------------------------------------------
+  const activitiesAssetsDir = path.resolve(
+    __dirname,
+    isProduction ? 'dist/assets/activities' : 'public/assets/activities'
+  );
+  app.use(
+    '/assets/activities',
+    express.static(activitiesAssetsDir, {
+      fallthrough: false,
+      maxAge: isProduction ? '7d' : 0,
+      setHeaders: (res) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+      },
+    })
+  );
+  app.use(
+    '/assets/activities',
+    (_err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+      return res.status(404).json({
+        error: 'Requested activity image was not found.',
+        code: 'ACTIVITY_IMAGE_NOT_FOUND',
+      });
+    }
+  );
+
+  // -------------------------------------------------------------------------
   // FRONTEND SERVING (Vite dev middleware in dev, static dist in prod)
   // -------------------------------------------------------------------------
   if (!isProduction) {

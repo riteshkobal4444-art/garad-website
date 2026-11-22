@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { BookOpenCheck, RotateCcw } from 'lucide-react';
 import {
@@ -7,6 +7,7 @@ import {
   FiscalYearId,
   HERO_STATISTICS,
 } from '../data/activities';
+import { formatFinancialYearLabel } from '../utils/financialYear';
 import { usePageSeo } from '../utils/seo';
 import { CivicTrajectory3D } from './CivicTrajectory3D';
 import { FilterDock } from './FilterDock';
@@ -29,6 +30,7 @@ export function InitiativesPage({
   onNavigateActivity,
 }: InitiativesPageProps) {
   const prefersReduced = useReducedMotion();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const archiveStructuredData = useMemo(
     () => ({
@@ -42,33 +44,65 @@ export function InitiativesPage({
         addressCountry: 'IN',
       },
       description:
-        'Official digital activity archive of Garad Foundation, documenting grassroots work in community welfare, women and health awareness, youth development, public health, education, and Marathi language and culture.',
+        'Official digital activity archive of Garad Foundation, documenting grassroots work in community welfare, women and health awareness, youth development, public health, education, environment, and Marathi language and culture.',
     }),
     []
   );
 
   usePageSeo({
-    title: 'Garad Foundation — Official Activity Archive (2020–2026)',
+    title: 'Garad Foundation — Official Activity Archive (FY 2018–2026)',
     description:
-      'Explore Garad Foundation’s documented 2020–2026 activity archive across Thane and Maharashtra: Utsavachi Shidori, Mamnoli hygiene outreach, Mission Bharari Phase 1, and youth competitions.',
+      'Explore Garad Foundation’s documented financial-year activity archive across Thane and Maharashtra: education drives, women’s health, blood donation, youth development, and community welfare.',
     type: 'website',
     structuredData: archiveStructuredData,
   });
 
   const filteredActivities = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return ACTIVITIES.filter((item) => {
       const yearMatch = selectedYear === 'all' || item.year === selectedYear;
       const categoryMatch =
-        selectedCategory === 'All' || item.category === selectedCategory;
-      return yearMatch && categoryMatch;
+        selectedCategory === 'All' ||
+        item.category === selectedCategory ||
+        Boolean(item.secondaryCategories?.includes(selectedCategory));
+      if (!yearMatch || !categoryMatch) return false;
+      if (!q) return true;
+
+      const searchableText = [
+        item.title,
+        item.subtitle || '',
+        item.shortTitle,
+        item.date,
+        item.yearDisplay,
+        item.location,
+        item.category,
+        item.categoryDisplayLabel || '',
+        ...(item.secondaryCategories || []),
+        item.cardDescription,
+        item.cardKeyStat,
+        item.introduction,
+        item.needAndRationale.heading,
+        ...item.needAndRationale.paragraphs,
+        item.whatWeDid.heading,
+        ...item.whatWeDid.paragraphs,
+        ...(item.partners?.map((p) => `${p.name} ${p.role}`) || []),
+        ...(item.outputs?.items || []),
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(q);
     });
-  }, [selectedYear, selectedCategory]);
+  }, [selectedYear, selectedCategory, searchQuery]);
 
   const displayYearLabel =
-    selectedYear === 'all' ? '2020–26' : selectedYear.replace('-', '–');
+    selectedYear === 'all'
+      ? 'FY 2018–2026'
+      : `FY ${formatFinancialYearLabel(selectedYear)}`;
 
   const isUnpopulatedFutureYear =
-    selectedYear !== 'all' && selectedYear !== '2020-21';
+    selectedYear !== 'all' &&
+    !ACTIVITIES.some((item) => item.year === selectedYear);
 
   return (
     <main className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 pb-16">
@@ -173,8 +207,10 @@ export function InitiativesPage({
       <FilterDock
         selectedYear={selectedYear}
         selectedCategory={selectedCategory}
+        searchQuery={searchQuery}
         onSelectYear={onSelectYear}
         onSelectCategory={onSelectCategory}
+        onSearchChange={setSearchQuery}
       />
 
       {/* ==================== ARCHIVED ACTIVITIES GRID ==================== */}
@@ -204,7 +240,7 @@ export function InitiativesPage({
               {filteredActivities.length === 1
                 ? 'Documented Activity'
                 : 'Documented Activities'}{' '}
-              · Activity Report 2020–2026
+              · {displayYearLabel}
             </span>
           </div>
         </div>
@@ -234,29 +270,34 @@ export function InitiativesPage({
             className="chrome-card chrome-card-lift rounded-2xl bg-white p-8 sm:p-12 text-center"
           >
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9A3B1E]">
-              Archive Edition {displayYearLabel}
+              Financial Year {selectedYear === 'all' ? '2018–2026' : formatFinancialYearLabel(selectedYear)}
             </p>
             <h3 className="mt-2 font-serif text-2xl font-bold text-[#171C19]">
-              {isUnpopulatedFutureYear
-                ? 'Activities for this year will be added as our archive is updated.'
+              {searchQuery.trim()
+                ? `No documented activities match "${searchQuery.trim()}".`
+                : isUnpopulatedFutureYear
+                ? `No activities have been published for ${displayYearLabel} yet.`
                 : 'No documented activities match this category filter.'}
             </h3>
             <p className="mt-2.5 max-w-lg mx-auto text-[14px] leading-relaxed text-[#58625C]">
-              {isUnpopulatedFutureYear
-                ? 'The 2020–21 edition is currently populated with six documented activities from the Garad Foundation Activity Report 2020–2026. Additional years will be published as verified activity records are added.'
-                : 'Try clearing the category filter or viewing all six documented 2020–21 activities.'}
+              {searchQuery.trim()
+                ? 'Try searching with a different keyword or reset all filters to browse the complete archive.'
+                : isUnpopulatedFutureYear
+                ? 'Verified activities for this April–March financial year will appear here once organisational documentation is approved and added.'
+                : 'Try clearing the category filter or viewing all documented activities across the archive.'}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <button
                 type="button"
                 onClick={() => {
-                  onSelectYear('2020-21');
+                  onSelectYear('all');
                   onSelectCategory('All');
+                  setSearchQuery('');
                 }}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-xs font-semibold transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>View 2020–21 Documented Activities (6)</span>
+                <span>View All Documented Activities ({ACTIVITIES.length})</span>
               </button>
               {selectedCategory !== 'All' && (
                 <button
@@ -286,15 +327,13 @@ export function InitiativesPage({
           <span className="tabular-nums">
             Showing {filteredActivities.length} of {ACTIVITIES.length} documented
             activities
-            {selectedYear === '2020-21'
-              ? ' for 2020–21'
-              : selectedYear === 'all'
-              ? ' across 2020–2026 archive'
+            {selectedYear === 'all'
+              ? ' across FY 2018–2026 archive'
               : ` for ${displayYearLabel}`}
           </span>
         </div>
         <span className="font-mono text-[11px] tracking-[0.1em] text-[#7D8580]">
-          GARAD FOUNDATION · ACTIVITY REPORT 2020–2026
+          GARAD FOUNDATION · FINANCIAL YEAR ARCHIVE (APR–MAR)
         </span>
       </div>
     </main>

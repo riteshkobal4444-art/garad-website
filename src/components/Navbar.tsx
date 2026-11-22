@@ -7,21 +7,29 @@ import {
   Info,
   MapPin,
   Menu,
+  Newspaper,
   User,
   Users,
   X,
 } from 'lucide-react';
 import { EASE_EDITORIAL } from './motion/MotionPrimitives';
 
-export type NavSectionKey = 'initiatives' | 'impact' | 'stories' | 'about';
+export type NavSectionKey =
+  | 'initiatives'
+  | 'in-the-news'
+  | 'impact'
+  | 'stories'
+  | 'about';
 
 interface NavbarProps {
   activeNav: NavSectionKey | null;
   isDonateRoute?: boolean;
+  isNewsRoute?: boolean;
   isReportsRoute?: boolean;
   isCsrRoute?: boolean;
   isVolunteerRoute?: boolean;
   onNavigateHome: () => void;
+  onNavigateNews: () => void;
   onSelectNav: (key: NavSectionKey) => void;
   onNavigateReports: () => void;
   onNavigateCsr: () => void;
@@ -32,6 +40,7 @@ interface NavbarProps {
 
 const NAV_ITEMS: { key: NavSectionKey; label: string }[] = [
   { key: 'initiatives', label: 'Initiatives' },
+  { key: 'in-the-news', label: 'In the News' },
   { key: 'impact', label: 'Impact' },
   { key: 'stories', label: 'Stories' },
   { key: 'about', label: 'About Us' },
@@ -40,10 +49,12 @@ const NAV_ITEMS: { key: NavSectionKey; label: string }[] = [
 export function Navbar({
   activeNav,
   isDonateRoute = false,
+  isNewsRoute = false,
   isReportsRoute = false,
   isCsrRoute = false,
   isVolunteerRoute = false,
   onNavigateHome,
+  onNavigateNews,
   onSelectNav,
   onNavigateReports,
   onNavigateCsr,
@@ -86,6 +97,16 @@ export function Navbar({
     setMobileMenuOpen(false);
     setAboutMenuOpen(false);
     onNavigateHome();
+  };
+
+  const handleNewsLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    setAboutMenuOpen(false);
+    onNavigateNews();
   };
 
   const handleReportsLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -156,11 +177,12 @@ export function Navbar({
         {/* Center Navigation Links */}
         <nav
           aria-label="Primary navigation"
-          className="hidden md:flex items-center gap-7 lg:gap-8"
+          className="hidden md:flex items-center gap-6 lg:gap-7"
         >
           {NAV_ITEMS.map((item) => {
             const isActive =
               activeNav === item.key ||
+              (item.key === 'in-the-news' && isNewsRoute) ||
               (item.key === 'about' &&
                 (isReportsRoute || isCsrRoute || isVolunteerRoute));
 
@@ -170,6 +192,31 @@ export function Navbar({
                   key={item.key}
                   href="/activities"
                   onClick={handleHomeLink}
+                  className={`relative py-2 text-[13.5px] font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A3B1E]/40 rounded-sm ${
+                    isActive
+                      ? 'text-[#142019] font-semibold'
+                      : 'text-[#555E58] hover:text-[#142019]'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-active-underline"
+                      transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                      className="absolute left-0 right-0 -bottom-[2px] h-[2px] rounded-full bg-[#9A3B1E]"
+                    />
+                  )}
+                </a>
+              );
+            }
+
+            if (item.key === 'in-the-news') {
+              return (
+                <a
+                  key={item.key}
+                  href="/in-the-news"
+                  aria-current={isNewsRoute ? 'page' : undefined}
+                  onClick={handleNewsLink}
                   className={`relative py-2 text-[13.5px] font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9A3B1E]/40 rounded-sm ${
                     isActive
                       ? 'text-[#142019] font-semibold'
@@ -392,11 +439,30 @@ export function Navbar({
             <div className="flex flex-col gap-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
-                  activeNav === item.key &&
+                  (activeNav === item.key ||
+                    (item.key === 'in-the-news' && isNewsRoute)) &&
                   !(
                     item.key === 'about' &&
                     (isReportsRoute || isCsrRoute || isVolunteerRoute)
                   );
+                if (item.key === 'in-the-news') {
+                  return (
+                    <a
+                      key={item.key}
+                      href="/in-the-news"
+                      aria-current={isNewsRoute ? 'page' : undefined}
+                      onClick={handleNewsLink}
+                      className={`w-full flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-[#EEF4F0] text-[#0D3021] font-semibold'
+                          : 'text-[#4F5953] hover:bg-white'
+                      }`}
+                    >
+                      <Newspaper className="w-4 h-4 text-[#9A3B1E]" />
+                      <span>{item.label}</span>
+                    </a>
+                  );
+                }
                 return (
                   <button
                     key={item.key}

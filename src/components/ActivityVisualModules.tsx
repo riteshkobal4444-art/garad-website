@@ -9,6 +9,8 @@ import {
   HeartHandshake,
   MapPin,
   Medal,
+  Mic,
+  Music,
   Package,
   ShieldAlert,
   Sparkles,
@@ -631,3 +633,213 @@ export function WinnersRecognitionModule({
     </section>
   );
 }
+
+/**
+ * Activity 07 — Abhivyakta 2024:
+ * Dedicated two-track showcase for Elocution Competition ("Voices of Inspiration")
+ * and Folk Dance Competition ("A Celebration of Culture") within Garad Foundation's editorial palette.
+ */
+export function CompetitionTracksModule({
+  activity,
+}: {
+  activity: ActivityRecord;
+}) {
+  const prefersReduced = useReducedMotion();
+  const tracks = activity.competitionTracks;
+  if (!tracks) return null;
+
+  return (
+    <section
+      aria-labelledby="competition-tracks-heading"
+      className="mt-12 sm:mt-14 space-y-6"
+    >
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#9A3B1E]">
+          {tracks.eyebrow}
+        </p>
+        <h2
+          id="competition-tracks-heading"
+          className="mt-1.5 font-serif text-[26px] sm:text-[32px] font-bold tracking-[-0.015em] text-[#171C19]"
+        >
+          {tracks.heading}
+        </h2>
+        {tracks.intro && (
+          <p className="mt-2 max-w-[700px] text-[14.5px] leading-relaxed text-[#555E58]">
+            {tracks.intro}
+          </p>
+        )}
+      </div>
+
+      {/* TRACK 1: ELOCUTION COMPETITION — VOICES OF INSPIRATION */}
+      <motion.div
+        initial={prefersReduced ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.56, ease: EASE_EDITORIAL }}
+        className="chrome-card chrome-card-lift rounded-[22px] bg-white overflow-hidden"
+      >
+        <div className="bg-[#0D3021] text-white px-6 sm:px-8 py-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#E6A94A]">
+              <Mic className="w-3.5 h-3.5" />
+              <span>{tracks.elocution.label}</span>
+            </span>
+            <h3 className="mt-2 font-serif text-[26px] sm:text-[30px] font-bold leading-tight text-white">
+              {tracks.elocution.title}
+            </h3>
+            <p className="mt-2 max-w-[62ch] text-[13.5px] leading-relaxed text-[#CBE0D5]">
+              {tracks.elocution.summary}
+            </p>
+          </div>
+
+          <div className="shrink-0 rounded-2xl bg-white/10 border border-white/15 px-5 py-3.5 text-left sm:text-right">
+            <p className="font-serif text-[34px] font-bold leading-none text-white tabular-nums">
+              {tracks.elocution.participantCount}
+            </p>
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#E6A94A]">
+              {tracks.elocution.participantLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className="p-6 sm:p-8 space-y-6">
+          {/* Two Grade Categories */}
+          <div>
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.13em] text-[#6B746E] mb-3.5">
+              COMPETITION CATEGORIES
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tracks.elocution.categories.map((cat, idx) => (
+                <Tilt3DCard
+                  key={cat.title}
+                  maxTilt={3}
+                  elevationY={-3}
+                  className="rounded-[16px] bg-[#EEF4F0] border border-[#D7E4DC] p-5"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-[#143B2A]">
+                      {cat.subtitle}
+                    </span>
+                    <span className="font-mono text-[11px] font-semibold text-[#143B2A] bg-white px-2 py-0.5 rounded-md border border-[#D4E3D9]">
+                      GROUP 0{idx + 1}
+                    </span>
+                  </div>
+                  <h4 className="mt-2 font-serif text-[22px] font-bold text-[#171C19]">
+                    {cat.title}
+                  </h4>
+                  <p className="mt-2 text-[13.5px] leading-relaxed text-[#46574E]">
+                    {cat.detail}
+                  </p>
+                </Tilt3DCard>
+              ))}
+            </div>
+          </div>
+
+          {/* Theme & Prizes Strip */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-2">
+            <div className="lg:col-span-7 rounded-[16px] bg-[#FAF8F4] border border-[#E7E0D3] p-5">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#9A3B1E]">
+                <BookOpen className="w-4 h-4" />
+                <span>Theme Focus</span>
+              </div>
+              <h4 className="mt-2 font-serif text-[19px] font-bold text-[#171C19]">
+                {tracks.elocution.themeTitle}
+              </h4>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-[#555E58]">
+                {tracks.elocution.themeDescription}
+              </p>
+            </div>
+
+            <div className="lg:col-span-5 rounded-[16px] bg-[#FAF8F4] border border-[#E7E0D3] p-5 flex flex-col justify-between">
+              <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#143B2A]">
+                <Trophy className="w-4 h-4 text-[#B57921]" />
+                <span>Winner Recognition</span>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {tracks.elocution.prizes.map((prize) => (
+                  <span
+                    key={prize}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[#E2D9C9] text-[12.5px] font-semibold text-[#171C19]"
+                  >
+                    <Award className="w-3.5 h-3.5 text-[#9A3B1E]" />
+                    <span>{prize}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* TRACK 2: FOLK DANCE COMPETITION — A CELEBRATION OF CULTURE */}
+      <motion.div
+        initial={prefersReduced ? false : { opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.56, delay: 0.08, ease: EASE_EDITORIAL }}
+        className="chrome-card chrome-card-lift rounded-[22px] bg-[#FBF7F0] overflow-hidden"
+      >
+        <div className="bg-gradient-to-r from-[#8E3519] via-[#9A3B1E] to-[#B1512C] text-white px-6 sm:px-8 py-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2 text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#FCE2B6]">
+              <Music className="w-3.5 h-3.5" />
+              <span>{tracks.folkDance.label}</span>
+            </span>
+            <h3 className="mt-2 font-serif text-[26px] sm:text-[30px] font-bold leading-tight text-white">
+              {tracks.folkDance.title}
+            </h3>
+            <p className="mt-2 max-w-[62ch] text-[13.5px] leading-relaxed text-[#FBE9DF]">
+              {tracks.folkDance.summary}
+            </p>
+          </div>
+
+          <div className="shrink-0 rounded-2xl bg-black/15 border border-white/20 px-5 py-3.5 text-left sm:text-right">
+            <p className="font-serif text-[34px] font-bold leading-none text-white tabular-nums">
+              {tracks.folkDance.participantCount}
+            </p>
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#FCE2B6]">
+              {tracks.folkDance.participantLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className="p-6 sm:p-8 space-y-5">
+          <div>
+            <p className="text-[10.5px] font-bold uppercase tracking-[0.13em] text-[#8E3519] mb-3.5">
+              {tracks.folkDance.highlightsLabel || 'CULTURAL SHOWCASE HIGHLIGHTS'}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tracks.folkDance.danceForms.map((form) => (
+                <Tilt3DCard
+                  key={form.name}
+                  maxTilt={3}
+                  elevationY={-3}
+                  className="rounded-[16px] bg-white border border-[#EADBC8] p-5"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-8 h-8 rounded-lg bg-[#FAEEE9] text-[#9A3B1E] flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4" />
+                    </span>
+                    <h4 className="font-serif text-[21px] font-bold text-[#171C19]">
+                      {form.name}
+                    </h4>
+                  </div>
+                  <p className="mt-2.5 text-[13.5px] leading-relaxed text-[#555E58]">
+                    {form.description}
+                  </p>
+                </Tilt3DCard>
+              ))}
+            </div>
+          </div>
+
+          {/* Award Ceremony Highlight */}
+          <div className="rounded-[15px] bg-[#F4EAD8]/70 border border-[#E5D3B3] px-5 py-4 flex items-start gap-3 text-[13.5px] leading-relaxed text-[#3E352A]">
+            <Trophy className="w-4 h-4 text-[#9A3B1E] shrink-0 mt-0.5" />
+            <p>{tracks.folkDance.closingHighlight}</p>
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+

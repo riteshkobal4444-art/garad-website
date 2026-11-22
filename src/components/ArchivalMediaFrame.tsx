@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BookOpen,
   Calendar,
   Camera,
   GraduationCap,
   HeartHandshake,
+  Leaf,
   MapPin,
   Mic,
   Package,
@@ -12,12 +13,31 @@ import {
   Video,
 } from 'lucide-react';
 import { ActivityMedia, VisualMotif } from '../data/activities';
-import { ResilientImage } from './motion/MotionPrimitives';
 
 interface ArchivalMediaFrameProps {
   media: ActivityMedia;
   variant?: 'card' | 'hero' | 'gallery';
   className?: string;
+  hideSampleBadge?: boolean;
+  onImageError?: (failed: boolean) => void;
+}
+
+export function IllustrativeImageBadge({
+  className = 'bottom-3 left-3',
+}: {
+  className?: string;
+}) {
+  return (
+    <span
+      className={`pointer-events-none select-none absolute ${className} z-10 inline-flex items-center gap-1.5 rounded bg-[#0A2217]/84 backdrop-blur-sm border border-white/22 px-2 py-0.5 font-mono text-[9.5px] sm:text-[10px] font-semibold uppercase tracking-[0.13em] text-[#FAF6EE] shadow-sm`}
+    >
+      <span
+        aria-hidden="true"
+        className="w-1.5 h-1.5 rounded-full bg-[#E3A63A] shrink-0"
+      />
+      <span>ILLUSTRATIVE IMAGE</span>
+    </span>
+  );
 }
 
 const MOTIF_STYLES: Record<
@@ -79,6 +99,14 @@ const MOTIF_STYLES: Record<
     iconColor: 'text-[#F6DDB2]',
     tag: 'Language & Culture Archive',
   },
+  environment: {
+    bg: 'from-[#0D3222] via-[#174A33] to-[#236446]',
+    accentGlow: 'bg-[#9ED9B4]/20',
+    ring: 'border-[#9ED9B4]/30',
+    iconBg: 'bg-white/12',
+    iconColor: 'text-[#BCE8CC]',
+    tag: 'Environmental Awareness Archive',
+  },
 };
 
 function MotifIcon({ motif, size }: { motif: VisualMotif; size: string }) {
@@ -95,28 +123,66 @@ function MotifIcon({ motif, size }: { motif: VisualMotif; size: string }) {
       return <GraduationCap className={size} />;
     case 'culture':
       return <Mic className={size} />;
+    case 'environment':
+      return <Leaf className={size} />;
   }
 }
 
 /**
- * Renders an authentic Garad Foundation photograph when `media.imagePath` is supplied,
- * or a dignified, museum-grade archival placeholder when real field photography
- * is awaiting archival upload or safeguarding consent clearance.
+ * Renders an authentic Garad Foundation photograph or a clearly labelled illustrative
+ * sample preview when `media.imagePath` is supplied. Automatically falls back to the
+ * dignified archival placeholder if an image is missing or fails to load.
  */
 export function ArchivalMediaFrame({
   media,
   variant = 'card',
   className = '',
+  hideSampleBadge = false,
+  onImageError,
 }: ArchivalMediaFrameProps) {
-  if (media.imagePath) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+    onImageError?.(false);
+  }, [media.imagePath, onImageError]);
+
+  if (media.imagePath && !imageFailed) {
+    const isSample = media.imageType === 'sample';
+    const badgePosition =
+      variant === 'hero'
+        ? 'bottom-3.5 left-4'
+        : variant === 'gallery'
+        ? 'bottom-2.5 left-2.5'
+        : 'bottom-3 left-3';
+
     return (
-      <ResilientImage
-        src={media.imagePath}
-        alt={media.alt}
-        fallbackTitle={media.placeholderLabel}
-        loading={variant === 'hero' ? 'eager' : 'lazy'}
-        className={`w-full h-full object-cover ${className}`}
-      />
+      <div className={`relative w-full h-full overflow-hidden bg-[#123123] ${className}`}>
+        <img
+          src={media.imagePath}
+          alt={media.alt}
+          loading={variant === 'hero' ? 'eager' : 'lazy'}
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={() => {
+            setImageFailed(true);
+            onImageError?.(true);
+          }}
+          style={{ objectPosition: media.objectPosition || 'center 30%' }}
+          className="w-full h-full object-cover"
+        />
+
+        {isSample && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#081911]/55 via-[#081911]/15 to-transparent"
+          />
+        )}
+
+        {isSample && !hideSampleBadge && (
+          <IllustrativeImageBadge className={badgePosition} />
+        )}
+      </div>
     );
   }
 

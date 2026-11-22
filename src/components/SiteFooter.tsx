@@ -1,8 +1,16 @@
 import React from 'react';
-import { FileText, Handshake, HeartHandshake, MapPin, Users } from 'lucide-react';
+import {
+  FileText,
+  Handshake,
+  HeartHandshake,
+  MapPin,
+  Newspaper,
+  Users,
+} from 'lucide-react';
 
 interface SiteFooterProps {
   onNavigateArchive: () => void;
+  onNavigateNews: () => void;
   onNavigateVolunteer: () => void;
   onNavigateCsr: () => void;
   onNavigateReports: () => void;
@@ -11,6 +19,7 @@ interface SiteFooterProps {
 
 export function SiteFooter({
   onNavigateArchive,
+  onNavigateNews,
   onNavigateVolunteer,
   onNavigateCsr,
   onNavigateReports,
@@ -53,6 +62,14 @@ export function SiteFooter({
             className="text-[#3C4640] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
           >
             Initiatives Archive
+          </a>
+          <a
+            href="/in-the-news"
+            onClick={(e) => handleLink(e, onNavigateNews)}
+            className="inline-flex items-center gap-1.5 text-[#3C4640] hover:text-[#9A3B1E] transition-colors whitespace-nowrap"
+          >
+            <Newspaper className="w-3.5 h-3.5 text-[#9A3B1E]" />
+            <span>In the News</span>
           </a>
           <a
             href="/volunteer"

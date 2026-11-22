@@ -69,21 +69,30 @@ export function LightboxModal({
             onClick={(e) => e.stopPropagation()}
             className="relative max-w-4xl w-full bg-[#10241A] rounded-2xl overflow-hidden border border-white/12 shadow-2xl"
           >
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 text-white">
-              <div className="flex items-center gap-2.5 text-sm font-medium">
-                <span className="font-mono text-xs text-[#E3A63A]">
+            <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-white/10 text-white">
+              <div className="flex flex-wrap items-center gap-2.5 text-sm font-medium min-w-0">
+                <span className="font-mono text-xs text-[#E3A63A] shrink-0">
                   {String(activeIndex + 1).padStart(2, '0')} /{' '}
                   {String(mediaItems.length).padStart(2, '0')}
                 </span>
-                <span className="text-white/90 truncate max-w-[260px] sm:max-w-lg">
+                <span className="text-white/90 truncate max-w-[200px] sm:max-w-md">
                   {current.dateRecorded || 'Archival Photograph'}
                 </span>
+                {current.imageType === 'sample' && (
+                  <span className="inline-flex items-center gap-1.5 rounded bg-[#E3A63A]/16 border border-[#E3A63A]/45 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#F7D794] shrink-0">
+                    <span
+                      aria-hidden="true"
+                      className="w-1.5 h-1.5 rounded-full bg-[#E3A63A]"
+                    />
+                    ILLUSTRATIVE IMAGE
+                  </span>
+                )}
               </div>
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close lightbox"
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -96,6 +105,16 @@ export function LightboxModal({
                 loading="eager"
                 className="w-full h-full object-contain"
               />
+
+              {current.imageType === 'sample' && (
+                <span className="pointer-events-none select-none absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded bg-[#0A2217]/84 backdrop-blur-sm border border-white/22 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#FAF6EE] shadow-sm">
+                  <span
+                    aria-hidden="true"
+                    className="w-1.5 h-1.5 rounded-full bg-[#E3A63A]"
+                  />
+                  ILLUSTRATIVE IMAGE
+                </span>
+              )}
 
               {mediaItems.length > 1 && (
                 <>
@@ -130,6 +149,11 @@ export function LightboxModal({
               {current.locationRecorded && (
                 <p className="mt-1 text-xs text-white/65">
                   {current.locationRecorded}
+                </p>
+              )}
+              {current.imageType === 'sample' && (
+                <p className="mt-2 text-[11px] text-[#E8D2A6]/85">
+                  Illustrative sample preview image — not an original Garad Foundation event photograph.
                 </p>
               )}
             </div>

@@ -1,6 +1,7 @@
 export type AppRoute =
   | { view: 'archive' }
   | { view: 'activity'; slug: string }
+  | { view: 'in-the-news' }
   | { view: 'reports' }
   | { view: 'csr' }
   | { view: 'csr-project'; slug: string }
@@ -24,6 +25,10 @@ export function parseCurrentRoute(): AppRoute {
   }
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  if (pathname === '/in-the-news' || pathname === '/garad-in-the-news') {
+    return { view: 'in-the-news' };
+  }
 
   if (pathname === '/reports') {
     return { view: 'reports' };
@@ -69,6 +74,10 @@ export function parseCurrentRoute(): AppRoute {
 
 export function getActivityPath(slug: string): string {
   return `/activities/${slug}`;
+}
+
+export function getInTheNewsPath(): string {
+  return '/in-the-news';
 }
 
 export function getReportsPath(): string {

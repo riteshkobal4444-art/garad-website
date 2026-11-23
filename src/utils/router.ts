@@ -1,4 +1,7 @@
 export type AppRoute =
+  | { view: 'home' }
+  | { view: 'about' }
+  | { view: 'garad-universe' }
   | { view: 'archive' }
   | { view: 'activity'; slug: string }
   | { view: 'learning-hub' }
@@ -13,20 +16,43 @@ export type AppRoute =
 
 /**
  * Parses clean History API pathname routes:
- * - / or /activities -> Archive page
+ * - / -> Flagship Garad Foundation Homepage
+ * - /about -> About Garad Foundation & Vision
+ * - /garad-universe -> Interactive Garad Universe (Mission Bharari Village)
+ * - /activities -> Complete Financial-Year Activities Archive
  * - /activities/:slug -> Individual Activity detail page
+ * - /learning-hub & /learning-hub/:slug -> Garad Learning Hub & Programmes
+ * - /in-the-news -> Garad in the News Pressroom
  * - /reports -> Reports & Publications page (Annual Reports + Activity Reports)
- * - /csr-partnerships -> Corporate CSR Partnership & Project Funding Hub
- * - /csr-partnerships/:slug -> Individual CSR Project funding profile
- * - /donate -> Dedicated Garad Foundation Donation page
- * - /donation-success?ref=...&token=... -> Verified Donation Confirmation page
+ * - /csr-partnerships & /csr-partnerships/:slug -> Corporate CSR Partnership Hub
+ * - /volunteer -> Be a Volunteer page
+ * - /donate & /donation-success -> Donation & Verified Receipt pages
  */
 export function parseCurrentRoute(): AppRoute {
   if (typeof window === 'undefined') {
-    return { view: 'archive' };
+    return { view: 'home' };
   }
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  if (pathname === '/' || pathname === '/home') {
+    if (window.location.hash === '#mission-bharari-phase-1') {
+      return { view: 'activity', slug: 'mission-bharari-phase-1' };
+    }
+    return { view: 'home' };
+  }
+
+  if (pathname === '/about' || pathname === '/about-us') {
+    return { view: 'about' };
+  }
+
+  if (pathname === '/garad-universe' || pathname === '/universe') {
+    return { view: 'garad-universe' };
+  }
+
+  if (pathname === '/activities') {
+    return { view: 'archive' };
+  }
 
   if (pathname === '/learning-hub') {
     return { view: 'learning-hub' };
@@ -79,11 +105,23 @@ export function parseCurrentRoute(): AppRoute {
     return { view: 'activity', slug: activityMatch[1].toLowerCase() };
   }
 
-  if (window.location.hash === '#mission-bharari-phase-1') {
-    return { view: 'activity', slug: 'mission-bharari-phase-1' };
-  }
+  return { view: 'home' };
+}
 
-  return { view: 'archive' };
+export function getHomePath(): string {
+  return '/';
+}
+
+export function getAboutPath(): string {
+  return '/about';
+}
+
+export function getGaradUniversePath(): string {
+  return '/garad-universe';
+}
+
+export function getArchivePath(): string {
+  return '/activities';
 }
 
 export function getActivityPath(slug: string): string {

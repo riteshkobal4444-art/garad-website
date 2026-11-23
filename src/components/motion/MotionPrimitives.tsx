@@ -218,6 +218,7 @@ interface ResilientImageProps {
   src: string;
   alt: string;
   className?: string;
+  style?: React.CSSProperties;
   loading?: 'lazy' | 'eager';
   fallbackTitle?: string;
 }
@@ -226,10 +227,15 @@ export function ResilientImage({
   src,
   alt,
   className = '',
+  style,
   loading = 'lazy',
   fallbackTitle,
 }: ResilientImageProps) {
   const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [src]);
 
   if (hasError) {
     return (
@@ -250,6 +256,7 @@ export function ResilientImage({
     <img
       src={src}
       alt={alt}
+      style={style}
       loading={loading}
       referrerPolicy="no-referrer"
       onError={() => setHasError(true)}

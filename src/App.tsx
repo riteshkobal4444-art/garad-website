@@ -12,13 +12,18 @@ import {
   EnquiryOrganisationType,
   getLearningProgrammeBySlug,
 } from './data/learningHub';
+import { GARAD_UNIVERSE_CONFIG } from './data/homepage';
 import {
   AppRoute,
+  getAboutPath,
   getActivityPath,
+  getArchivePath,
   getCsrPartnershipsPath,
   getCsrProjectPath,
   getDonatePath,
   getDonationSuccessPath,
+  getGaradUniversePath,
+  getHomePath,
   getInTheNewsPath,
   getLearningHubPath,
   getLearningProgrammePath,
@@ -29,6 +34,9 @@ import {
 } from './utils/router';
 import { VerifiedReceipt } from './utils/razorpayCheckout';
 import { Navbar, NavSectionKey } from './components/Navbar';
+import { HomePage } from './components/HomePage';
+import { AboutPage } from './components/AboutPage';
+import { GaradUniversePage } from './components/GaradUniversePage';
 import { InitiativesPage } from './components/InitiativesPage';
 import { LearningHubPage } from './components/LearningHubPage';
 import { ProgrammeDetailView } from './components/learningHub/ProgrammeDetailView';
@@ -57,20 +65,24 @@ import {
 } from './components/motion/MotionPrimitives';
 
 function getNavKeyForRoute(r: AppRoute): NavSectionKey | null {
-  if (r.view === 'donate' || r.view === 'donation-success') return null;
-  if (r.view === 'learning-hub' || r.view === 'learning-hub-programme') {
-    return 'learning-hub';
+  switch (r.view) {
+    case 'home':
+      return 'home';
+    case 'about':
+      return 'about';
+    case 'garad-universe':
+      return 'garad-universe';
+    case 'archive':
+    case 'activity':
+      return 'activities';
+    case 'learning-hub':
+    case 'learning-hub-programme':
+      return 'learning-hub';
+    case 'in-the-news':
+      return 'in-the-news';
+    default:
+      return null;
   }
-  if (r.view === 'in-the-news') return 'in-the-news';
-  if (
-    r.view === 'reports' ||
-    r.view === 'csr' ||
-    r.view === 'csr-project' ||
-    r.view === 'volunteer'
-  ) {
-    return 'about';
-  }
-  return 'initiatives';
 }
 
 export default function App() {
@@ -128,17 +140,49 @@ export default function App() {
     };
   }, []);
 
+  const navigateToHome = () => {
+    pushRoute(getHomePath());
+    setRoute({ view: 'home' });
+    setActiveNav('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToAbout = () => {
+    pushRoute(getAboutPath());
+    setRoute({ view: 'about' });
+    setActiveNav('about');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToUniverse = () => {
+    if (GARAD_UNIVERSE_CONFIG.externalUrl) {
+      window.location.assign(GARAD_UNIVERSE_CONFIG.externalUrl);
+      return;
+    }
+    pushRoute(getGaradUniversePath());
+    setRoute({ view: 'garad-universe' });
+    setActiveNav('garad-universe');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToContact = () => {
+    const footerContact = document.getElementById('contact');
+    if (footerContact) {
+      footerContact.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const navigateToArchive = () => {
-    pushRoute('/activities');
+    pushRoute(getArchivePath());
     setRoute({ view: 'archive' });
-    setActiveNav('initiatives');
+    setActiveNav('activities');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToActivity = (slug: string) => {
     pushRoute(getActivityPath(slug));
     setRoute({ view: 'activity', slug });
-    setActiveNav('initiatives');
+    setActiveNav('activities');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -174,7 +218,7 @@ export default function App() {
   const navigateToReports = () => {
     pushRoute(getReportsPath());
     setRoute({ view: 'reports' });
-    setActiveNav('about');
+    setActiveNav(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -186,7 +230,7 @@ export default function App() {
     setCsrEnquiryPrefill(prefill ? { ...prefill } : null);
     pushRoute(getCsrPartnershipsPath());
     setRoute({ view: 'csr' });
-    setActiveNav('about');
+    setActiveNav(null);
     if (!prefill?.scrollToEnquiry) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -195,14 +239,14 @@ export default function App() {
   const navigateToCsrProject = (slug: string) => {
     pushRoute(getCsrProjectPath(slug));
     setRoute({ view: 'csr-project', slug });
-    setActiveNav('about');
+    setActiveNav(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToVolunteer = () => {
     pushRoute(getVolunteerPath());
     setRoute({ view: 'volunteer' });
-    setActiveNav('about');
+    setActiveNav(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -229,23 +273,6 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSelectNav = (key: NavSectionKey) => {
-    if (key === 'initiatives') {
-      navigateToArchive();
-      return;
-    }
-    if (key === 'learning-hub') {
-      navigateToLearningHub();
-      return;
-    }
-    if (key === 'in-the-news') {
-      navigateToInTheNews();
-      return;
-    }
-    setActiveNav(key);
-    setDialog({ kind: 'section', section: key });
-  };
-
   const currentActivity =
     route.view === 'activity' ? getActivityBySlug(route.slug) : undefined;
   const currentCsrProject =
@@ -258,38 +285,94 @@ export default function App() {
   const isDonateFlow =
     route.view === 'donate' || route.view === 'donation-success';
   const isCsrFlow = route.view === 'csr' || route.view === 'csr-project';
-  const isLearningHubFlow =
-    route.view === 'learning-hub' || route.view === 'learning-hub-programme';
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-editorial-canvas text-[#171C19] flex flex-col">
         <Navbar
           activeNav={activeNav}
+          isHomeRoute={route.view === 'home'}
           isDonateRoute={isDonateFlow}
-          isLearningHubRoute={isLearningHubFlow}
-          isNewsRoute={route.view === 'in-the-news'}
-          isReportsRoute={route.view === 'reports'}
-          isCsrRoute={isCsrFlow}
           isVolunteerRoute={route.view === 'volunteer'}
-          onNavigateHome={navigateToArchive}
+          isCsrRoute={isCsrFlow}
+          isReportsRoute={route.view === 'reports'}
+          onNavigateHome={navigateToHome}
+          onNavigateAbout={navigateToAbout}
+          onNavigateArchive={navigateToArchive}
           onNavigateLearningHub={() => navigateToLearningHub()}
           onNavigateNews={navigateToInTheNews}
-          onSelectNav={handleSelectNav}
-          onNavigateReports={navigateToReports}
-          onNavigateCsr={() => navigateToCsr()}
+          onNavigateUniverse={navigateToUniverse}
+          onNavigateContact={navigateToContact}
           onNavigateVolunteer={navigateToVolunteer}
           onNavigateDonate={navigateToDonate}
-          onOpenPortal={() =>
-            setDialog({ kind: 'section', section: 'portal' })
-          }
+          onNavigateCsr={() => navigateToCsr()}
+          onNavigateReports={navigateToReports}
         />
 
         <ScrollProgressBar />
 
         <div className="flex-1">
           <AnimatePresence mode="wait">
-            {route.view === 'archive' ? (
+            {route.view === 'home' ? (
+              <motion.div
+                key="route-home"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.28, ease: EASE_EDITORIAL }}
+              >
+                <HomePage
+                  onNavigateAbout={navigateToAbout}
+                  onNavigateUniverse={navigateToUniverse}
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateLearningHub={() => navigateToLearningHub()}
+                  onNavigateLearningProgramme={navigateToLearningProgramme}
+                  onNavigateNews={navigateToInTheNews}
+                  onNavigateVolunteer={navigateToVolunteer}
+                  onNavigateDonate={navigateToDonate}
+                  onNavigateCsr={() => navigateToCsr()}
+                  onNavigateCsrProject={navigateToCsrProject}
+                  onNavigateReports={navigateToReports}
+                  onOpenLightbox={(mediaItems, index) =>
+                    setLightboxState({ mediaItems, index })
+                  }
+                />
+              </motion.div>
+            ) : route.view === 'about' ? (
+              <motion.div
+                key="route-about"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: EASE_EDITORIAL }}
+              >
+                <AboutPage
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateReports={navigateToReports}
+                  onNavigateVolunteer={navigateToVolunteer}
+                  onNavigateCsr={() => navigateToCsr()}
+                  onNavigateDonate={navigateToDonate}
+                />
+              </motion.div>
+            ) : route.view === 'garad-universe' ? (
+              <motion.div
+                key="route-garad-universe"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: EASE_EDITORIAL }}
+              >
+                <GaradUniversePage
+                  onNavigateHome={navigateToHome}
+                  onNavigateActivity={navigateToActivity}
+                  onNavigateCsrProject={navigateToCsrProject}
+                  onNavigateLearningHub={() => navigateToLearningHub()}
+                  onNavigateArchive={navigateToArchive}
+                  onNavigateVolunteer={navigateToVolunteer}
+                />
+              </motion.div>
+            ) : route.view === 'archive' ? (
               <motion.div
                 key="route-archive"
                 initial={{ opacity: 0, y: 8 }}
@@ -381,9 +464,7 @@ export default function App() {
                   onNavigateArchive={navigateToArchive}
                   onNavigateActivity={navigateToActivity}
                   onNavigateReports={navigateToReports}
-                  onOpenAbout={() =>
-                    setDialog({ kind: 'section', section: 'about' })
-                  }
+                  onOpenAbout={navigateToAbout}
                 />
               </motion.div>
             ) : route.view === 'csr-project' && currentCsrProject ? (
@@ -481,16 +562,16 @@ export default function App() {
                   We couldn&apos;t locate that page
                 </h1>
                 <p className="mt-3 text-[15px] leading-relaxed text-[#555E58]">
-                  The requested URL does not match a published activity or CSR
-                  project profile.
+                  The requested URL does not match a published activity or
+                  programme profile.
                 </p>
                 <button
                   type="button"
-                  onClick={navigateToArchive}
+                  onClick={navigateToHome}
                   className="mt-7 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#0D3021] hover:bg-[#16402E] text-white text-sm font-semibold transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>Return to All Activities</span>
+                  <span>Return to Homepage</span>
                 </button>
               </motion.main>
             )}
@@ -498,9 +579,12 @@ export default function App() {
         </div>
 
         <SiteFooter
+          onNavigateHome={navigateToHome}
+          onNavigateAbout={navigateToAbout}
           onNavigateArchive={navigateToArchive}
           onNavigateLearningHub={() => navigateToLearningHub()}
           onNavigateNews={navigateToInTheNews}
+          onNavigateUniverse={navigateToUniverse}
           onNavigateVolunteer={navigateToVolunteer}
           onNavigateCsr={() => navigateToCsr()}
           onNavigateReports={navigateToReports}
